@@ -22,7 +22,7 @@ def read_reporter_json():
         json_object = json.load(json_file)
         json_file.close()
     total_percentage = json_object['statistics']['total']['percentage']
-    print('percentage total', total_percentage)
+    return total_percentage
 
 
 if __name__ == '__main__':
