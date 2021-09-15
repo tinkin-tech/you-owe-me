@@ -1,6 +1,8 @@
 import sys
 import os
 import json
+import csv
+from datetime import datetime
 from constants.config import validate_environment_variables
 
 
@@ -19,11 +21,30 @@ def execute_jscpd(path_folder):
 
 def read_reporter_json():
     json_reporter_path = './report/jscpd-report.json'
+    current_date = datetime.today().strftime('%Y-%m-%d')
     with open(json_reporter_path) as json_file:
         json_object = json.load(json_file)
         json_file.close()
     total_percentage = json_object['statistics']['total']['percentage']
-    return total_percentage
+    data_to_write = {'fecha': current_date, 'duplicacion': total_percentage}
+    write_into_csv(data_to_write)
+
+
+def write_into_csv(data_to_write):
+    file_name = 'report.csv'
+    header = ['fecha', 'duplicacion']
+    file_exists = os.path.isfile(file_name)
+    with open(file_name, 'a', encoding='UTF8', newline='') as f_object:
+        writer = csv.DictWriter(f_object, delimiter=';', fieldnames=header)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(data_to_write)
+        f_object.close()
+
+
+def report_duplication_between_dates():
+    environment_variables = validate_environment_variables()
+    print(environment_variables)
 
 
 if __name__ == '__main__':
