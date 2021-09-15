@@ -1,11 +1,20 @@
 # YouOweMe
-Tech Debt Analyser
 
-YouOweMe is a cli tool written in python that helps you measure and visualize the tech debt of your repo, with historical data to see trends in the code.
+## Install
 
-Some of the metrics that are or will be included are:
-- cyclomatic complexity
-- code duplication
-- code churn
-- bad smells
-- lines of code
+1. Check if you have Python version 3 installed. Read official [documentation](https://www.python.org/downloads/).
+2. Install Poetry version 1.1 or higher. Read official [documentation](https://python-poetry.org/docs/).
+
+## Run project
+
+To install the project dependencies, run the following command:
+
+```bash
+poetry install
+```
+
+Then run the following command, so that all subsequent commands may run in the virtual environment:
+
+```bash
+poetry shell
+```
