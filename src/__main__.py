@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from constants.config import validate_environment_variables
 
 
 def get_terminal_variables():
@@ -11,7 +12,7 @@ def get_terminal_variables():
 
 def execute_jscpd(path_folder):
     complete_jscpd_command = 'jscpd {} --ignore "**/*.json,**/*.yml,**/node_modules/**" --reporters json --output ' \
-                       './report/ '.format(path_folder)
+                             './report/ '.format(path_folder)
     os.system('npm list -g jscpd || npm i -g jscpd@3.3.26')
     os.system(complete_jscpd_command)
 
