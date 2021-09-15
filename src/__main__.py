@@ -31,15 +31,15 @@ def read_reporter_json():
 
 
 def write_into_csv(data_to_write):
-    file_name = 'report.csv'
+    file_name = './report/report.csv'
     header = ['fecha', 'duplicacion']
     file_exists = os.path.isfile(file_name)
-    with open(file_name, 'a', encoding='UTF8', newline='') as f_object:
-        writer = csv.DictWriter(f_object, delimiter=';', fieldnames=header)
+    with open(file_name, 'a', encoding='UTF8', newline='') as csv_file:
+        writer = csv.DictWriter(csv_file, delimiter=';', fieldnames=header)
         if not file_exists:
             writer.writeheader()
         writer.writerow(data_to_write)
-        f_object.close()
+        csv_file.close()
 
 
 def report_duplication_between_dates():
