@@ -5,15 +5,14 @@ import json
 
 def get_directory_path_to_analyze():
     if sys.argv[1]:
-        directory_path_to_analyze = sys.argv[1]
-        return directory_path_to_analyze
+        directory_path = sys.argv[1]
+        return directory_path
     print('No ha enviado el directorio a ser analizado')
-
 
 
 def calculate_code_duplication(directory_path):
     complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" --reporters json' \
-                       '--output  ./report/ '.format(directory_path)
+                             '--output  ./report/ '.format(directory_path)
     os.system('npm list -g jscpd || npm i -g jscpd@3.3.26')
     os.system(complete_jscpd_command)
     get_total_percentage_repeat_code()
