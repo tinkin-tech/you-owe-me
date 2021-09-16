@@ -12,7 +12,7 @@ def validate_environment_variables():
     if MEASUREMENT_START_DATE is None or MEASUREMENT_END_DATE is None or MEASUREMENT_INTERVAL is None:
         raise ValueError('No se ha seteado las variables de entorno')
     return {
-        'start_date': MEASUREMENT_START_DATE,
+        'initial_date': MEASUREMENT_START_DATE,
         'end_date': MEASUREMENT_END_DATE,
         'measurement_interval': MEASUREMENT_INTERVAL,
     }
