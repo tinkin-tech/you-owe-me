@@ -6,16 +6,17 @@ from datetime import datetime, timedelta
 from constants.config import validate_environment_variables
 
 
-def get_project_directory():
-    console_arguments = sys.argv
-    path_analyze_folder = console_arguments[1]
-    return path_analyze_folder
+def get_directory_path_to_analyze():
+    if sys.argv[1]:
+        directory_path = sys.argv[1]
+        return directory_path
+    print('No ha enviado el directorio a ser analizado')
 
 
 def get_dates_between_intervals():
     environment_variables = validate_environment_variables()
-    initial_date = datetime.strptime(environment_variables['initial_date'], '%Y-%m-%d')
     end_date = datetime.strptime(environment_variables['end_date'], '%Y-%m-%d')
+    initial_date = datetime.strptime(environment_variables['initial_date'], '%Y-%m-%d')
     interval_days = int(environment_variables['measurement_interval'])
     dates = [initial_date.strftime('%Y-%m-%d')]
     while initial_date <= end_date:
@@ -28,9 +29,9 @@ def check_commits(path):
     dates = get_dates_between_intervals()
     commits = []
     for date in dates:
-        commit_id = os.popen('cd {} && git rev-list --before {} -1 master'.format(path, date)).read()
         if commit_id in commits:
             print('Commit repetido')
+        commit_id = os.popen('cd {} && git rev-list --before {} -1 master'.format(path, date)).read()
             break
         commits.append(commit_id)
         os.system('cd {} && git checkout {}'.format(path, commit_id.strip()))
@@ -38,21 +39,22 @@ def check_commits(path):
         read_reporter_json(date)
 
 
-def execute_jscpd(path_folder):
+def calculate_code_duplication(directory_path):
     complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" --reporters json ' \
-                             '--output ./report/ '.format(path_folder)
+                             '--output  ./report/ '.format(directory_path)
     os.system('npm list -g jscpd || npm i -g jscpd@3.3.26')
     os.system(complete_jscpd_command)
+    get_total_percentage_repeat_code()
 
 
-def read_reporter_json(commit_date):
+def get_total_percentage_repeat_code():
     json_reporter_path = './report/jscpd-report.json'
     with open(json_reporter_path) as json_file:
         json_object = json.load(json_file)
-        json_file.close()
     total_percentage = json_object['statistics']['total']['percentage']
     data_to_write = {'fecha': commit_date, 'duplicacion': total_percentage}
     write_into_csv(data_to_write)
+    os.system('rm {}'.format(json_reporter_path))
 
 
 def write_into_csv(data_to_write):
@@ -68,5 +70,4 @@ def write_into_csv(data_to_write):
 
 
 if __name__ == '__main__':
-    project_path = get_project_directory()
-    check_commits(project_path)
+    directory_path_to_analyze = get_directory_path_to_analyze()

@@ -10,7 +10,6 @@
 To install the project dependencies, run the following command:
 
 ```bash
-export PATH=$PATH:$HOME/.poetry/bin
 poetry install
 ```
 
