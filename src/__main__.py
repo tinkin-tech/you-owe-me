@@ -25,7 +25,7 @@ def get_dates_between_intervals():
     return dates
 
 
-def check_commits(directory_path):
+def check_duplicate_code_commits(directory_path):
     commits_dates = get_dates_between_intervals()
     commits = []
     for commit_date in commits_dates:
@@ -70,3 +70,4 @@ def write_into_csv_report(data_to_write):
 
 if __name__ == '__main__':
     directory_path_to_analyze = get_directory_path_to_analyze()
+    check_duplicate_code_commits(directory_path_to_analyze)
