@@ -7,7 +7,7 @@ from constants.config import validate_environment_variables
 
 
 def get_directory_path_to_analyze():
-    if sys.argv[1]:
+    if len(sys.argv) > 1:
         directory_path = sys.argv[1]
         return directory_path
     print('No ha enviado el directorio a ser analizado')
