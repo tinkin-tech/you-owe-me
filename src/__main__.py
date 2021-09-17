@@ -1,6 +1,6 @@
 import sys
 import os
-import json
+import re
 import csv
 from datetime import datetime, timedelta
 from constants.config import validate_environment_variables
@@ -36,26 +36,18 @@ def check_duplicate_code_commits(directory_path):
             break
         commits.append(commit_id)
         os.system('cd {} && git checkout {}'.format(directory_path, commit_id.strip()))
-        calculate_code_duplication(directory_path)
-        get_total_percentage_repeat_code(commit_date)
+        calculate_code_duplication(directory_path, commit_date)
 
 
-def calculate_code_duplication(directory_path):
+def calculate_code_duplication(directory_path, commit_date):
     regex_all_files = environment_variables['regex_all_files']
-    complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" --reporters json ' \
-                             '--output  ./report/  --pattern "{}"'.format(directory_path, regex_all_files)
-    os.system('npm list -g jscpd || npm i -g jscpd@3.3.26')
-    os.system(complete_jscpd_command)
-
-
-def get_total_percentage_repeat_code(commit_date):
-    json_reporter_path = './report/jscpd-report.json'
-    with open(json_reporter_path) as json_file:
-        json_object = json.load(json_file)
-    total_percentage = json_object['statistics']['total']['percentage']
-    data_to_write = {'fecha': commit_date, 'duplicacion': total_percentage}
-    write_into_csv_report(data_to_write)
-    os.system('rm {}'.format(json_reporter_path))
+    complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
+                             '--pattern "{}"'.format(directory_path, regex_all_files)
+    os.system('npm list -g jscpd || npm i -g jscpd@3')
+    jscpd_response = os.popen(complete_jscpd_command).read()
+    total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
+    data_to_write_csv = {'fecha': commit_date, 'duplicacion': total_percentage_duplicated}
+    write_into_csv_report(data_to_write_csv)
 
 
 def write_into_csv_report(data_to_write):
