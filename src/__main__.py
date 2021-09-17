@@ -3,9 +3,9 @@ import os
 import re
 import csv
 from datetime import datetime, timedelta
-from constants.config import validate_environment_variables
+from constants.config import load_environment_variables
 
-environment_variables = validate_environment_variables()
+environment_variables = load_environment_variables()
 
 
 def get_directory_path_to_analyze():
@@ -15,21 +15,21 @@ def get_directory_path_to_analyze():
     raise Exception("The directory to be analyzed hasn't been sent")
 
 
-def get_dates_between_intervals():
-    end_date = datetime.strptime(environment_variables['end_date'], '%Y-%m-%d')
-    initial_date = datetime.strptime(environment_variables['initial_date'], '%Y-%m-%d')
-    interval_days = int(environment_variables['measurement_interval'])
-    dates = [initial_date.strftime('%Y-%m-%d')]
-    while initial_date <= end_date:
-        initial_date = initial_date + timedelta(days=interval_days)
-        dates.append(initial_date.strftime('%Y-%m-%d'))
-    return dates
+def get_measurement_dates_between_intervals():
+    measurement_start_date = environment_variables['MEASUREMENT_START_DATE']
+    measurement_end_date = environment_variables['MEASUREMENT_END_DATE']
+    measurement_intervals = environment_variables['MEASUREMENT_INTERVAL']
+    measurement_dates = [measurement_start_date.strftime('%Y-%m-%d')]
+    while measurement_start_date <= measurement_end_date:
+        measurement_start_date = measurement_start_date + timedelta(days=measurement_intervals)
+        measurement_dates.append(measurement_start_date.strftime('%Y-%m-%d'))
+    return measurement_dates
 
 
 def check_duplicate_code_commits(directory_path):
-    commits_dates = get_dates_between_intervals()
+    dates = get_measurement_dates_between_intervals()
     commits = []
-    for commit_date in commits_dates:
+    for commit_date in dates:
         commit_id = os.popen('cd {} && git rev-list --before {} -1 master'.format(directory_path, commit_date)).read()
         if commit_id in commits:
             print('Repeated commit')
@@ -40,7 +40,7 @@ def check_duplicate_code_commits(directory_path):
 
 
 def calculate_code_duplication(directory_path, commit_date):
-    regex_all_files = environment_variables['regex_all_files']
+    regex_all_files = environment_variables['REGEX_ALL_FILES']
     complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
                              '--pattern "{}"'.format(directory_path, regex_all_files)
     os.system('npm list -g jscpd || npm i -g jscpd@3')
