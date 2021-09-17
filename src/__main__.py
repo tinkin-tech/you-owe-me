@@ -40,9 +40,9 @@ def check_duplicate_code_commits(directory_path):
 
 
 def calculate_code_duplication(directory_path, commit_date):
-    regex_all_files = environment_variables['REGEX_ALL_FILES']
+    regex_files = environment_variables['REGEX_IMPLEMENTATION_FILES']
     complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
-                             '--pattern "{}"'.format(directory_path, regex_all_files)
+                             '--pattern "{}"'.format(directory_path, regex_files)
     os.system('npm list -g jscpd || npm i -g jscpd@3')
     jscpd_response = os.popen(complete_jscpd_command).read()
     total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
