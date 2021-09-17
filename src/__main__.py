@@ -5,16 +5,17 @@ import csv
 from datetime import datetime, timedelta
 from constants.config import validate_environment_variables
 
+environment_variables = validate_environment_variables()
+
 
 def get_directory_path_to_analyze():
     if len(sys.argv) > 1:
         directory_path = sys.argv[1]
         return directory_path
-    print('No ha enviado el directorio a ser analizado')
+    raise Exception('No ha enviado el directorio a ser analizado')
 
 
 def get_dates_between_intervals():
-    environment_variables = validate_environment_variables()
     end_date = datetime.strptime(environment_variables['end_date'], '%Y-%m-%d')
     initial_date = datetime.strptime(environment_variables['initial_date'], '%Y-%m-%d')
     interval_days = int(environment_variables['measurement_interval'])
@@ -40,8 +41,9 @@ def check_duplicate_code_commits(directory_path):
 
 
 def calculate_code_duplication(directory_path):
+    regex_all_files = environment_variables['regex_all_files']
     complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" --reporters json ' \
-                             '--output  ./report/ '.format(directory_path)
+                             '--output  ./report/  --pattern "{}"'.format(directory_path, regex_all_files)
     os.system('npm list -g jscpd || npm i -g jscpd@3.3.26')
     os.system(complete_jscpd_command)
 
@@ -65,7 +67,6 @@ def write_into_csv_report(data_to_write):
         if not file_exists:
             writer.writeheader()
         writer.writerow(data_to_write)
-        csv_file.close()
 
 
 if __name__ == '__main__':
