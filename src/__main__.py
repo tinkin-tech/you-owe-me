@@ -54,6 +54,8 @@ def write_into_csv_report(data_to_write):
     file_name = './report/report.csv'
     header = ['date', 'duplication']
     file_exists = os.path.isfile(file_name)
+    if not os.path.exists(os.path.dirname(file_name)):
+        os.makedirs(os.path.dirname(file_name))
     with open(file_name, 'a', encoding='UTF8', newline='') as csv_file:
         writer = csv.DictWriter(csv_file, delimiter=';', fieldnames=header)
         if not file_exists:
