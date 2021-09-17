@@ -11,7 +11,7 @@ REGEX_ALL_FILES = os.getenv("REGEX_ALL_FILES")
 
 def validate_environment_variables():
     if MEASUREMENT_START_DATE is None or MEASUREMENT_END_DATE is None or MEASUREMENT_INTERVAL is None:
-        raise ValueError('No se ha seteado las variables de entorno')
+        raise ValueError("Environment variables haven't been set")
     return {
         'initial_date': MEASUREMENT_START_DATE,
         'end_date': MEASUREMENT_END_DATE,

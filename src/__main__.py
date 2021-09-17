@@ -12,7 +12,7 @@ def get_directory_path_to_analyze():
     if len(sys.argv) > 1:
         directory_path = sys.argv[1]
         return directory_path
-    raise Exception('No ha enviado el directorio a ser analizado')
+    raise Exception("The directory to be analyzed hasn't been sent")
 
 
 def get_dates_between_intervals():
@@ -32,7 +32,7 @@ def check_duplicate_code_commits(directory_path):
     for commit_date in commits_dates:
         commit_id = os.popen('cd {} && git rev-list --before {} -1 master'.format(directory_path, commit_date)).read()
         if commit_id in commits:
-            print('Commit repetido')
+            print('Repeated commit')
             break
         commits.append(commit_id)
         os.system('cd {} && git checkout {}'.format(directory_path, commit_id.strip()))
@@ -46,13 +46,13 @@ def calculate_code_duplication(directory_path, commit_date):
     os.system('npm list -g jscpd || npm i -g jscpd@3')
     jscpd_response = os.popen(complete_jscpd_command).read()
     total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
-    data_to_write_csv = {'fecha': commit_date, 'duplicacion': total_percentage_duplicated}
+    data_to_write_csv = {'date': commit_date, 'duplication': total_percentage_duplicated}
     write_into_csv_report(data_to_write_csv)
 
 
 def write_into_csv_report(data_to_write):
     file_name = './report/report.csv'
-    header = ['fecha', 'duplicacion']
+    header = ['date', 'duplication']
     file_exists = os.path.isfile(file_name)
     with open(file_name, 'a', encoding='UTF8', newline='') as csv_file:
         writer = csv.DictWriter(csv_file, delimiter=';', fieldnames=header)
