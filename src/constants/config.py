@@ -16,12 +16,15 @@ def load_environment_variables():
             or regex_test_files is None or regex_implementation_files is None:
         raise ValueError("Environment variables haven't been set")
 
+    measurement_start_date = datetime.strptime(measurement_start_date, '%Y-%m-%d')
+    measurement_end_date = datetime.strptime(measurement_end_date, '%Y-%m-%d')
+
     if measurement_start_date > measurement_end_date:
         raise ValueError("Initial date must be less than end date")
 
     return {
-        'MEASUREMENT_START_DATE': datetime.strptime(measurement_start_date, '%Y-%m-%d'),
-        'MEASUREMENT_END_DATE': datetime.strptime(measurement_end_date, '%Y-%m-%d'),
+        'MEASUREMENT_START_DATE': measurement_start_date,
+        'MEASUREMENT_END_DATE': measurement_end_date,
         'MEASUREMENT_INTERVAL': int(measurement_intervals),
         'REGEX_TEST_FILES': regex_test_files,
         'REGEX_IMPLEMENTATION_FILES': regex_implementation_files,
