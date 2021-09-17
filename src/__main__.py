@@ -1,30 +1,22 @@
 import sys
 import os
-import json
+import re
 
 
 def get_directory_path_to_analyze():
-    if sys.argv[1]:
+    if len(sys.argv[1]) > 1:
         directory_path = sys.argv[1]
         return directory_path
-    print('No ha enviado el directorio a ser analizado')
+    raise Exception("The directory to be analyzed wasn't sent")
 
 
 def calculate_code_duplication(directory_path):
-    complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" --reporters json ' \
-                             '--output  ./report/ '.format(directory_path)
+    complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
+                             ''.format(directory_path)
     os.system('npm list -g jscpd || npm i -g jscpd@3.3.26')
-    os.system(complete_jscpd_command)
-    get_total_percentage_repeat_code()
-
-
-def get_total_percentage_repeat_code():
-    json_reporter_path = './report/jscpd-report.json'
-    with open(json_reporter_path) as json_file:
-        json_object = json.load(json_file)
-    total_percentage = json_object['statistics']['total']['percentage']
-    os.system('rm {}'.format(json_reporter_path))
-    return total_percentage
+    jscpd_response = os.popen(complete_jscpd_command).read()
+    total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
+    print(total_percentage_duplicated)  # este valor se usa para escribir en csv
 
 
 if __name__ == '__main__':
