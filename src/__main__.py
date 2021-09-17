@@ -4,7 +4,7 @@ import re
 
 
 def get_directory_path_to_analyze():
-    if len(sys.argv[1]) > 1:
+    if len(sys.argv) > 1:
         directory_path = sys.argv[1]
         return directory_path
     raise Exception("The directory to be analyzed wasn't sent")
