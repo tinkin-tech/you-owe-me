@@ -35,7 +35,7 @@ def check_duplicate_code_commits(directory_path):
             print('Repeated commit')
             break
         commits.append(commit_id)
-        os.system('cd {} && git checkout {}'.format(directory_path, commit_id.strip()))
+        os.system('cd {} && git checkout {} --quiet'.format(directory_path, commit_id.strip()))
         calculate_code_duplication(directory_path, commit_date)
 
 
@@ -43,7 +43,7 @@ def calculate_code_duplication(directory_path, commit_date):
     regex_files = environment_variables['REGEX_IMPLEMENTATION_FILES']
     complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
                              '--pattern "{}"'.format(directory_path, regex_files)
-    os.system('npm list -g jscpd || npm i -g jscpd@3')
+    os.system('npm list -g jscpd || npm i -g jscpd@3 --silent')
     jscpd_response = os.popen(complete_jscpd_command).read()
     total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
     data_to_write_csv = {'date': commit_date, 'duplication': total_percentage_duplicated}
