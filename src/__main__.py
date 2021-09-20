@@ -27,21 +27,21 @@ def get_measurement_dates_between_intervals():
     return measurement_dates
 
 
-def check_duplicate_code_commits(directory_path):
+def get_percentages_duplicate_code_by_commits(directory_path):
     dates = get_measurement_dates_between_intervals()
-    last_commit_analyzed = ''
+    commit_id_analyzed = ''
+    percentages_duplicate_code = []
     for commit_date in dates:
-        get_commit_id = 'cd {} && git checkout master --quiet && git rev-list --before {} ' \
-                        '-1 master'.format(directory_path, commit_date)
+        get_commit_id = 'cd {} && git rev-list -1 --before {} master ' \
+                        ''.format(directory_path, commit_date)
         commit_id = subprocess.check_output(get_commit_id, shell=True).decode('utf-8')
-        if commit_id == last_commit_analyzed:
-            print('Repeated commit')
+        if commit_id == commit_id_analyzed:
             break
-        last_commit_analyzed = commit_id
-        switch_to_commit = 'cd {} && git checkout {} --quiet'.format(directory_path, commit_id.strip())
+        commit_id_analyzed = commit_id
+        switch_to_commit = 'cd {} && git checkout {} --quiet --force'.format(directory_path, commit_id.strip())
         subprocess.run(switch_to_commit, shell=True)
-        data_to_write_csv = {'date': commit_date, 'duplication': get_percentage_duplicate_code(directory_path)}
-        write_csv_report(data_to_write_csv)
+        percentages_duplicate_code.append(get_percentage_duplicate_code(directory_path))
+    return percentages_duplicate_code
 
 
 def get_percentage_duplicate_code(directory_path):
@@ -52,8 +52,8 @@ def get_percentage_duplicate_code(directory_path):
                    stderr=subprocess.STDOUT)
     output = subprocess.check_output(get_code_duplication, shell=True).decode('utf-8')
     # the regular expression find the numbers with percentage
-    total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', output.strip())[0]
-    return total_percentage_duplicated
+    percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', output.strip())[0]
+    return percentage_duplicated
 
 
 def get_code_coverage_report(directory_path):
@@ -85,5 +85,4 @@ def write_csv_report(data_to_write):
 
 
 if __name__ == '__main__':
-    # check_duplicate_code_commits(get_directory_path_to_analyze())
-    get_code_coverage_report(get_directory_path_to_analyze())
+    get_percentages_duplicate_code_by_commits(get_directory_path_to_analyze())
