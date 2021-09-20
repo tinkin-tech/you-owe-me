@@ -64,11 +64,11 @@ def get_code_coverage_report(directory_path):
     get_head_coverage_report = 'cd {} && cat coverage/coverage-summary.json | head -1'.format(directory_path)
     subprocess.run(generate_coverage_report, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     output = subprocess.check_output(get_head_coverage_report, shell=True).decode('utf-8')
-    # the regular expression looks for the deepest value nested inside a json, and returns it (return information
+    # the regular expression looks for the deepest value nested inside a json, and returns it
+    # return total, covered, skipped, pct separated by ","; from lines, statements and functions
     summary_lines_code = re.findall('(?<=\{)\s*[^{]*?(?=[\}])', output.strip())[0]
-    percentage_code_coverage = summary_lines_code.split(',')[3]
-    print(int(filter(str.isdigit, percentage_code_coverage)))
-    print(type(percentage_code_coverage))
+    percentage_code_coverage = summary_lines_code.split(',')[3].split(':')[1]
+    return percentage_code_coverage
 
 
 def write_csv_report(data_to_write):
@@ -85,4 +85,4 @@ def write_csv_report(data_to_write):
 
 
 if __name__ == '__main__':
-    get_percentages_duplicate_code_by_commits(get_directory_path_to_analyze())
+    get_code_coverage_report(get_directory_path_to_analyze())
