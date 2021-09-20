@@ -20,7 +20,7 @@ def load_environment_variables():
     measurement_end_date = datetime.strptime(measurement_end_date, '%Y-%m-%d')
 
     if measurement_start_date > measurement_end_date:
-        raise ValueError("Initial date must be less than end date")
+        raise ValueError("The initial date must be before the end date")
 
     return {
         'MEASUREMENT_START_DATE': measurement_start_date,
