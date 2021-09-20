@@ -12,7 +12,7 @@ def get_directory_path_to_analyze():
     if len(sys.argv) > 1:
         directory_path = sys.argv[1]
         return directory_path
-    raise Exception("The directory to be analyzed hasn't been sent")
+    raise Exception("The directory to be analyzed hasn't been given")
 
 
 def get_measurement_dates_between_intervals():
@@ -28,13 +28,14 @@ def get_measurement_dates_between_intervals():
 
 def check_duplicate_code_commits(directory_path):
     dates = get_measurement_dates_between_intervals()
-    commits = []
+    last_commit_analyzed = ''
     for commit_date in dates:
-        commit_id = os.popen('cd {} && git rev-list --before {} -1 master'.format(directory_path, commit_date)).read()
-        if commit_id in commits:
+        commit_id = os.popen('cd {} && git checkout master --quiet && git rev-list --before {} -1 master'
+                             .format(directory_path, commit_date)).read()
+        if commit_id == last_commit_analyzed:
             print('Repeated commit')
             break
-        commits.append(commit_id)
+        last_commit_analyzed = commit_id
         os.system('cd {} && git checkout {} --quiet'.format(directory_path, commit_id.strip()))
         calculate_code_duplication(directory_path, commit_date)
 
@@ -43,7 +44,7 @@ def calculate_code_duplication(directory_path, commit_date):
     regex_files = environment_variables['REGEX_IMPLEMENTATION_FILES']
     complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
                              '--pattern "{}"'.format(directory_path, regex_files)
-    os.system('npm list -g jscpd || npm i -g jscpd@3 --silent')
+    os.system('npm list -g jscpd > /dev/null || npm i -g jscpd@3 --silent')
     jscpd_response = os.popen(complete_jscpd_command).read()
     total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
     data_to_write_csv = {'date': commit_date, 'duplication': total_percentage_duplicated}

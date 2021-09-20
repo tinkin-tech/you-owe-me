@@ -14,7 +14,7 @@ def load_environment_variables():
 
     if measurement_start_date is None or measurement_end_date is None or measurement_intervals is None \
             or regex_test_files is None or regex_implementation_files is None:
-        raise ValueError("Environment variables haven't been set")
+        raise ValueError("Environment variables haven't been given")
 
     measurement_start_date = datetime.strptime(measurement_start_date, '%Y-%m-%d')
     measurement_end_date = datetime.strptime(measurement_end_date, '%Y-%m-%d')
