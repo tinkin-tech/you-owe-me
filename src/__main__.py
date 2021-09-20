@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import csv
+import subprocess
 from datetime import datetime, timedelta
 from constants.config import load_environment_variables
 
@@ -30,24 +31,28 @@ def check_duplicate_code_commits(directory_path):
     dates = get_measurement_dates_between_intervals()
     last_commit_analyzed = ''
     for commit_date in dates:
-        commit_id = os.popen('cd {} && git checkout master --quiet && git rev-list --before {} -1 master'
-                             .format(directory_path, commit_date)).read()
+        get_commit_id = 'cd {} && git checkout master --quiet && git rev-list --before {} ' \
+                        '-1 master'.format(directory_path, commit_date)
+        commit_id = subprocess.check_output(get_commit_id, shell=True).decode('utf-8')
         if commit_id == last_commit_analyzed:
             print('Repeated commit')
             break
         last_commit_analyzed = commit_id
-        os.system('cd {} && git checkout {} --quiet'.format(directory_path, commit_id.strip()))
-        data_to_write_csv = {'date': commit_date, 'duplication': calculate_code_duplication(directory_path)}
+        switch_to_commit = 'cd {} && git checkout {} --quiet'.format(directory_path, commit_id.strip())
+        subprocess.run(switch_to_commit, shell=True)
+        data_to_write_csv = {'date': commit_date, 'duplication': get_percentage_duplicate_code(directory_path)}
         write_csv_report(data_to_write_csv)
 
 
-def calculate_code_duplication(directory_path):
-    regex_files = environment_variables['REGEX_IMPLEMENTATION_FILES']
-    complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
-                             '--pattern "{}"'.format(directory_path, regex_files)
-    os.system('npm list -g jscpd > /dev/null || npm i -g jscpd@3 --silent')
-    jscpd_response = os.popen(complete_jscpd_command).read()
-    total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
+def get_percentage_duplicate_code(directory_path):
+    regex_implementation_files = environment_variables['REGEX_IMPLEMENTATION_FILES']
+    get_code_duplication = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
+                           '--pattern "{}"'.format(directory_path, regex_implementation_files)
+    subprocess.run('npm list -g jscpd || npm i -g jscpd@3', shell=True, stdout=subprocess.DEVNULL,
+                   stderr=subprocess.STDOUT)
+    output = subprocess.check_output(get_code_duplication, shell=True).decode('utf-8')
+    # the regular expression find the numbers with percentage
+    total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', output.strip())[0]
     return total_percentage_duplicated
 
 
