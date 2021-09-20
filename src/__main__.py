@@ -37,21 +37,21 @@ def check_duplicate_code_commits(directory_path):
             break
         last_commit_analyzed = commit_id
         os.system('cd {} && git checkout {} --quiet'.format(directory_path, commit_id.strip()))
-        calculate_code_duplication(directory_path, commit_date)
+        data_to_write_csv = {'date': commit_date, 'duplication': calculate_code_duplication(directory_path)}
+        write_csv_report(data_to_write_csv)
 
 
-def calculate_code_duplication(directory_path, commit_date):
+def calculate_code_duplication(directory_path):
     regex_files = environment_variables['REGEX_IMPLEMENTATION_FILES']
     complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
                              '--pattern "{}"'.format(directory_path, regex_files)
     os.system('npm list -g jscpd > /dev/null || npm i -g jscpd@3 --silent')
     jscpd_response = os.popen(complete_jscpd_command).read()
     total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
-    data_to_write_csv = {'date': commit_date, 'duplication': total_percentage_duplicated}
-    write_into_csv_report(data_to_write_csv)
+    return total_percentage_duplicated
 
 
-def write_into_csv_report(data_to_write):
+def write_csv_report(data_to_write):
     file_name = './report/report.csv'
     header = ['date', 'duplication']
     file_exists = os.path.isfile(file_name)
@@ -65,5 +65,4 @@ def write_into_csv_report(data_to_write):
 
 
 if __name__ == '__main__':
-    directory_path_to_analyze = get_directory_path_to_analyze()
-    check_duplicate_code_commits(directory_path_to_analyze)
+    check_duplicate_code_commits(get_directory_path_to_analyze())
