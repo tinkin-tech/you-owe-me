@@ -11,9 +11,10 @@ def load_environment_variables():
     measurement_intervals = os.getenv("MEASUREMENT_INTERVAL")
     regex_test_files = os.getenv("REGEX_TEST_FILES")
     regex_implementation_files = os.getenv("REGEX_IMPLEMENTATION_FILES")
+    extensions_to_analyze = os.getenv("EXTENSIONS_TO_ANALYZE")
 
     if measurement_start_date is None or measurement_end_date is None or measurement_intervals is None \
-            or regex_test_files is None or regex_implementation_files is None:
+            or regex_test_files is None or regex_implementation_files is None or extensions_to_analyze is None:
         raise ValueError("Environment variables haven't been given")
 
     measurement_start_date = datetime.strptime(measurement_start_date, '%Y-%m-%d')
@@ -28,4 +29,5 @@ def load_environment_variables():
         'MEASUREMENT_INTERVAL': int(measurement_intervals),
         'REGEX_TEST_FILES': regex_test_files,
         'REGEX_IMPLEMENTATION_FILES': regex_implementation_files,
+        'EXTENSIONS_TO_ANALYZE': extensions_to_analyze,
     }
