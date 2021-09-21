@@ -1,24 +1,44 @@
 import sys
-import os
+import subprocess
 import re
 
 
 def get_directory_path_to_analyze():
     if len(sys.argv) > 1:
-        directory_path = sys.argv[1]
-        return directory_path
-    raise Exception("The directory to be analyzed wasn't sent")
+        return sys.argv[1]
+    raise Exception("The directory to be analyzed must be passed as argument")
 
 
-def calculate_code_duplication(directory_path):
-    complete_jscpd_command = 'jscpd {} --silent --ignore "**/*.json,**/*.yml,**/node_modules/**" ' \
-                             ''.format(directory_path)
-    os.system('npm list -g jscpd || npm i -g jscpd@3.3.26')
-    jscpd_response = os.popen(complete_jscpd_command).read()
-    total_percentage_duplicated = re.findall('\\d+(?:\\.\\d+)?%', jscpd_response.strip())[0]
-    print(total_percentage_duplicated)  # este valor se usa para escribir en csv
+def install_debt_report_dependencies():
+    subprocess.run(
+        "npm list -g jscpd || npm i -g jscpd@3.3.26",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+    )
 
 
-if __name__ == '__main__':
-    directory_path_to_analyze = get_directory_path_to_analyze()
-    calculate_code_duplication(directory_path_to_analyze)
+def get_code_duplication_percentage(directory_path):
+    code_duplication_report = subprocess.check_output(
+        "jscpd {} --silent --ignore  "
+        '"**/*.json,**/*.yml,**/node_modules/**"'.format(directory_path),
+        shell=True,
+    ).decode("utf-8").strip()
+    return re.findall(
+        "\\d+(?:\\.\\d+)?%", code_duplication_report
+    )[0]
+
+
+def generate_debt_report():
+    install_debt_report_dependencies()
+    print(
+        """
+    Report Type      | Result
+    -----------------|-----------
+    Code Duplication | %s
+    """
+        % get_code_duplication_percentage(get_directory_path_to_analyze())
+    )
+
+
+if __name__ == "__main__":
+    generate_debt_report()
