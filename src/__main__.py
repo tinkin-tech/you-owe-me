@@ -15,9 +15,11 @@ def get_element_by_index(list, index, default_value):
 
 
 def get_directory_path_to_analyze():
-    if have_more_than_one_element(sys.argv):
-        return sys.argv[1]
-    raise Exception("The directory to be analyzed must be passed as argument")
+    if not have_more_than_one_element(sys.argv):
+        raise Exception(
+            "The directory to be analyzed must be passed as an argument"
+        )
+    return sys.argv[1]
 
 
 def install_debt_report_dependencies():
