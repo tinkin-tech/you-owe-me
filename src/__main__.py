@@ -2,20 +2,15 @@ import sys
 import subprocess
 import re
 
+REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
 
-def have_more_than_one_element(list):
+
+def has_more_than_one_element(list):
     return len(list) > 1
 
 
-def get_element_by_index(list, index, default_value):
-    try:
-        return list[index]
-    except IndexError:
-        return default_value
-
-
 def get_directory_path_to_analyze():
-    if not have_more_than_one_element(sys.argv):
+    if not has_more_than_one_element(sys.argv):
         raise Exception(
             "The directory to be analyzed must be passed as an argument"
         )
@@ -40,9 +35,12 @@ def get_code_duplication_percentage(directory_path):
         .decode("utf-8")
         .strip()
     )
-    return get_element_by_index(
-        re.findall("\\d+(?:\\.\\d+)?%", code_duplication_report), 0, "0%"
-    )
+    code_duplication_percentage = re.findall(REGEX_TO_FIND_PERCENTAGE_NUMBER, code_duplication_report)
+    if not has_more_than_one_element(code_duplication_percentage):
+        raise Exception(
+            "There isn't JSCPD result for the submitted directory"
+        )
+    return code_duplication_percentage[0]
 
 
 def generate_debt_report():
