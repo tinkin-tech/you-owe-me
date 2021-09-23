@@ -32,18 +32,18 @@ def get_code_duplication_percentage(directory_path):
             '"**/*.json,**/*.yml,**/node_modules/**"'.format(directory_path),
             shell=True,
         )
-        .decode("utf-8")
-        .strip()
+            .decode("utf-8")
+            .strip()
     )
     code_duplication_percentage = re.findall(REGEX_TO_FIND_PERCENTAGE_NUMBER, code_duplication_report)
-    if not has_more_than_one_element(code_duplication_percentage):
-        raise Exception(
-            "There isn't JSCPD result for the submitted directory"
-        )
+    # if not has_more_than_one_element(code_duplication_percentage):
+    #     raise Exception(
+    #         "There isn't JSCPD result for the submitted directory"
+    #     )
     return code_duplication_percentage[0]
 
 
-def generate_debt_report():
+def generate_debt_report(directory_path):
     install_debt_report_dependencies()
     print(
         """
@@ -51,10 +51,10 @@ def generate_debt_report():
     -----------------|-----------
     Code Duplication | {}
     """.format(
-            get_code_duplication_percentage(get_directory_path_to_analyze())
+            get_code_duplication_percentage(directory_path)
         )
     )
 
 
 if __name__ == "__main__":
-    generate_debt_report()
+    generate_debt_report(get_directory_path_to_analyze())
