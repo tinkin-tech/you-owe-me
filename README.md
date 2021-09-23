@@ -13,6 +13,11 @@ To install the project dependencies, run the following command:
 poetry install
 ```
 
+### Run test
+```bash
+poetry run python -m pytest
+```
+
 Then run the following command, so that all subsequent commands may run in the virtual environment:
 
 ```bash
