@@ -12,8 +12,8 @@ To install project dependencies, run the following command:
 ```bash
 $ poetry install
 ```
+Then run the following command, so that all subsequent commands may run in the virtual environment:
 
-### Run test suite
 ```bash
 $ poetry shell
 ```
@@ -26,7 +26,7 @@ To run the project, run the following command:
 $ ./you_owe_me.sh [directoy_path_to_analyze]
 ```
 
-### Run test
+### Run test suite
 ```bash
 $ ./run_tests.sh
 ```
