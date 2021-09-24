@@ -13,7 +13,7 @@ To install the project dependencies, run the following command:
 $ poetry install
 ```
 
-### Run test
+### Run test suite
 ```bash
 $ ./run_tests.sh
 ```
