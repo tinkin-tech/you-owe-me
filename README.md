@@ -10,16 +10,16 @@
 To install the project dependencies, run the following command:
 
 ```bash
-poetry install
+$ poetry install
 ```
 
 ### Run test
 ```bash
-poetry run python -m pytest
+$ ./run_tests.sh
 ```
 
 Then run the following command, so that all subsequent commands may run in the virtual environment:
 
 ```bash
-poetry shell
+$ poetry shell
 ```

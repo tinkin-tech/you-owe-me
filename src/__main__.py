@@ -1,6 +1,7 @@
 import sys
 import subprocess
 import re
+from os import path
 
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
 
@@ -14,6 +15,8 @@ def get_directory_path_to_analyze():
         raise Exception(
             "The directory to be analyzed must be passed as an argument"
         )
+    if not path.exists(sys.argv[1]):
+        raise Exception("The directory to analyze doesn't exist")
     return sys.argv[1]
 
 
@@ -36,10 +39,9 @@ def get_code_duplication_percentage(directory_path):
         .decode("utf-8")
         .strip()
     )
-    code_duplication_percentage = re.findall(
-        REGEX_TO_FIND_PERCENTAGE_NUMBER, code_duplication_report
-    )
-    return code_duplication_percentage[0]
+    return re.findall(REGEX_TO_FIND_PERCENTAGE_NUMBER, code_duplication_report)[
+        0
+    ]
 
 
 def generate_debt_report(directory_path):
