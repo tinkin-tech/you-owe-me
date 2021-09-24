@@ -6,8 +6,8 @@ from os import path
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
 
 
-def has_more_than_one_element(dynamic_list):
-    return len(dynamic_list) > 1
+def has_more_than_one_element(list_):
+    return len(list_) > 1
 
 
 def get_directory_path_to_analyze():
