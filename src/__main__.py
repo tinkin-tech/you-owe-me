@@ -76,15 +76,15 @@ def get_code_duplication_percentage(directory_path):
 def get_debt_report_by_date(
     directory_path, start_date, end_date, interval_in_days
 ):
-    commit_analyzed = ""
+    previous_analyzed_commit = ""
     code_duplications_percentage_by_date = []
     for date in get_dates_by_day_interval(
         start_date, end_date, interval_in_days
     ):
-        commit_to_analyze = get_commit_by_date(directory_path, date)
-        if commit_to_analyze == commit_analyzed:
+        analyzed_commit = get_commit_by_date(directory_path, date)
+        if analyzed_commit == previous_analyzed_commit:
             break
-        commit_analyzed = commit_to_analyze
+        previous_analyzed_commit = analyzed_commit
         code_duplications_percentage_by_date.append(
             {
                 "DATE": date,
