@@ -60,10 +60,10 @@ def get_code_duplication_percentage(directory_path):
 
 
 def get_code_duplication_by_range_date(
+    directory_path,
     start_date,
     end_date,
     interval_in_days,
-    directory_path=get_directory_path_to_analyze(),
 ):
     previous_analyzed_commit = ""
     code_duplications_percentage_by_date = []
@@ -89,11 +89,13 @@ def get_code_duplication_by_range_date(
     return code_duplications_percentage_by_date
 
 
-def generate_debt_report(start_date, end_date, interval_in_days):
+def generate_debt_report(
+    directory_path, start_date, end_date, interval_in_days
+):
     install_debt_report_dependencies()
     report_body = ""
     for code_duplication_percentage in get_code_duplication_by_range_date(
-        start_date, end_date, interval_in_days
+        directory_path, start_date, end_date, interval_in_days
     ):
         report_body += f"""
         | {code_duplication_percentage['DATE']} |     {code_duplication_percentage['CODE_DUPLICATION']}       |
@@ -109,6 +111,7 @@ if __name__ == "__main__":
     env_variables = load_environment_variables()
     print(
         generate_debt_report(
+            get_directory_path_to_analyze(),
             env_variables["START_DATE"],
             env_variables["END_DATE"],
             env_variables["INTERVAL_IN_DAYS"],
