@@ -12,6 +12,7 @@ python = "^3.9"
 pylint = "^2.10.2"
 black = "^21.9b0"
 pytest = "^6.2.5"
+taskipy = "^1.9.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -19,3 +20,59 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 80
+
+[tool.taskipy.tasks]
+test = "python -m pytest"
+lint = "pylint ./**/*.py"
+start = "python src/__main__.py '$1'"
+
+[tool.pylint]
+  [tool.pylint.master]
+  suggestion-mode = "yes"
+  # C0114 (missing-module-docstring)
+  # C0115 (missing-class-docstring)
+  # C0116 (missing-function-docstring)
+  disable = "C0114,C0115,C0116,F0010,E0611"
+  [tool.pylint.REFACTORING]
+  max-nested-blocks = 3
+  [tool.pylint.'VARIABLES']
+  allow-global-unused-variables = "yes"
+  # A regular expression matching the name of dummy variables (i.e. expected to not be used).
+  dummy-variables-rgx = "_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_"
+  [tool.pylint.'BASIC']
+  argument-naming-style = "snake_case"
+  attr-naming-style = "snake_case"
+  class-naming-style = "PascalCase"
+  const-naming-style = "UPPER_CASE"
+  function-naming-style = "snake_case"
+  include-naming-hint = "yes"
+  method-naming-style = "snake_case"
+  module-naming-style = "snake_case"
+  variable-naming-style = "snake_case"
+  [tool.pylint.'FORMAT']
+  indent-after-paren = 4
+  indent-string = '    '
+  max-line-length = 80
+  single-line-class-stmt = "no"
+  single-line-if-stmt = "no"
+  [tool.pylint.'DESIGN']
+  # Maximum number of arguments for function / method.
+  max-args = 5
+  # Maximum number of attributes for a class (see R0902).
+  max-attributes = 7
+  # Maximum number of boolean expressions in an if statement.
+  max-bool-expr = 5
+  # Maximum number of branch for function / method body.
+  max-branches = 12
+  # Maximum number of locals for function / method body.
+  max-locals = 15
+  # Maximum number of parents for a class (see R0901).
+  max-parents = 7
+  # Maximum number of public methods for a class (see R0904).
+  max-public-methods = 20
+  # Maximum number of return / yield for function / method body.
+  max-returns = 6
+  # Maximum number of statements in function / method body.
+  max-statements = 50
+  # Minimum number of public methods for a class (see R0903).
+  min-public-methods = 2
