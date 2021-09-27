@@ -5,10 +5,12 @@ suggestion-mode=yes
 # C0114 (missing-module-docstring)
 # C0115 (missing-class-docstring)
 # C0116 (missing-function-docstring)
+# F0010 (__init.py__ file required
 disable=
     C0114,
     C0115,
     C0116,
+    F0010,
 
 [REFACTORING]
 

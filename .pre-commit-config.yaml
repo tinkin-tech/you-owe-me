@@ -5,12 +5,13 @@ repos:
     rev: 21.9b0
     hooks:
     -   id: black
-        files: ./src/
+        always_run: true
 -   repo: https://github.com/PyCQA/pylint
     rev: v2.11.1
     hooks:
     -   id: pylint
-        files: ./src/
+        entry: pylint ./
+        always_run: true
 -   repo: local
     hooks:
       - id: pytest
