@@ -27,4 +27,6 @@ def load_environment_variables():
 def check_for_environment_variables(variables):
     for variable in variables:
         if os.getenv(variable) is None:
-            raise ValueError(f"Variable {variable} is not defined")
+            raise ValueError(
+                f"Variable {variable} wasn't defined as an environment variable."
+            )
