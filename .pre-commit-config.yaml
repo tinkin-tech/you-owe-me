@@ -11,3 +11,11 @@ repos:
     hooks:
     -   id: pylint
         files: ./src/
+-   repo: local
+    hooks:
+      - id: pytest-check
+        name: pytest-check
+        entry: bash ./run_tests.sh
+        language: system
+        pass_filenames: false
+        always_run: true
