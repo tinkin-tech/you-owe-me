@@ -2,7 +2,7 @@ import os
 import csv
 
 
-def write_csv_report(data_to_write):
+def write_report_csv(data_to_write):
     report_directory = "./report/report.csv"
     header = ["DATE", "CODE_DUPLICATION"]
     file_exists = os.path.isfile(report_directory)
