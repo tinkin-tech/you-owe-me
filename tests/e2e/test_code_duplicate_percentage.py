@@ -3,9 +3,7 @@ from src.__main__ import generate_debt_report
 
 def test_code_duplication_percentage():
     assert (
-        generate_debt_report(
-            "/home/dev-06/Desktop/tinkin/python/you-owe-me/tests/repository-fixture/"
-        )
+        generate_debt_report("tests/demo-repository")
         == """
     Report Type      | Result
     -----------------|-----------
