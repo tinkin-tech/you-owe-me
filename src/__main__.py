@@ -44,7 +44,7 @@ def get_code_duplication_percentage(directory_path):
     ]
 
 
-def generate_file(directory_path):
+def generate_debt_report(directory_path):
     install_debt_report_dependencies()
     return f"""
     Report Type      | Result
@@ -54,4 +54,4 @@ def generate_file(directory_path):
 
 
 if __name__ == "__main__":
-    print(generate_file(get_directory_path_to_analyze()))
+    print(generate_debt_report(get_directory_path_to_analyze()))

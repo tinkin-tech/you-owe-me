@@ -23,8 +23,8 @@ line-length = 80
 
 [tool.taskipy.tasks]
 test = "python -m pytest"
-lint = "pylint ./**/*.py"
-start = "python src/__main__.py '$1'"
+lint = 'find . -type f -name "*.py" | xargs pylint'
+start = 'poetry run python src/__main__.py'
 
 [tool.pylint]
   [tool.pylint.master]
@@ -32,7 +32,7 @@ start = "python src/__main__.py '$1'"
   # C0114 (missing-module-docstring)
   # C0115 (missing-class-docstring)
   # C0116 (missing-function-docstring)
-  disable = "C0114,C0115,C0116,F0010,E0611"
+  disable = "C0114,C0115,C0116,F0010,E0611,E0401"
   [tool.pylint.REFACTORING]
   max-nested-blocks = 3
   [tool.pylint.'VARIABLES']
@@ -76,3 +76,12 @@ start = "python src/__main__.py '$1'"
   max-statements = 50
   # Minimum number of public methods for a class (see R0903).
   min-public-methods = 2
+  [tool.pylint.similarities]
+  # Minimum lines number of a similarity.
+  min-similarity-lines = 4
+  # Ignore comments when computing similarities.
+  ignore-comments = "yes"
+  # Ignore docstrings when computing similarities.
+  ignore-docstrings = "yes"
+  # Ignore imports when computing similarities.
+  ignore-imports = "no"
