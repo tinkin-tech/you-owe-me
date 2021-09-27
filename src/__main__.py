@@ -4,6 +4,7 @@ import re
 from os import path
 from datetime import timedelta
 from constants.config import load_environment_variables
+from utils.write_csv_report import write_csv_report
 
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
 
@@ -98,19 +99,20 @@ def generate_debt_report(
     directory_path, start_date, end_date, interval_in_days
 ):
     install_debt_report_dependencies()
-    header_report = """
+    report_header = """
         Report Type      | Date       |   Result  
         -----------------|------------|----------
     """
-    body_report = ""
+    report_body = ""
     for code_duplication_percentage in get_code_duplications_percentage_by_date(
         directory_path, start_date, end_date, interval_in_days
     ):
-        body_report += f"""
+        report_body += f"""
         Code Duplication | {code_duplication_percentage['DATE']} | {code_duplication_percentage['CODE_DUPLICATION']}
         -----------------|------------|-----------
         """
-    return f"{header_report} {body_report}"
+        write_csv_report(code_duplication_percentage)
+    return f"{report_header} {report_body}"
 
 
 if __name__ == "__main__":
