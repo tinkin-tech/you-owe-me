@@ -13,8 +13,8 @@ repos:
         files: ./src/
 -   repo: local
     hooks:
-      - id: pytest-check
-        name: pytest-check
+      - id: pytest
+        name: pytest
         entry: bash ./run_tests.sh
         language: system
         pass_filenames: false
