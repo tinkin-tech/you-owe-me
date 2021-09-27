@@ -8,7 +8,7 @@ load_dotenv()
 
 def load_environment_variables():
     start_date = os.getenv("START_DATE")
-    end_date = os.getenv("MEASUREMENT_END_DATE")
+    end_date = os.getenv("END_DATE")
     interval_in_days = os.getenv("INTERVAL_IN_DAYS")
 
     if start_date is None or end_date is None or interval_in_days is None:

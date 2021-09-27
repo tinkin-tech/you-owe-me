@@ -95,8 +95,8 @@ def generate_debt_report(
 ):
     install_debt_report_dependencies()
     header_report = """
-        Report Type      | Date      |   Result  
-        -----------------|-----------|----------\n
+        Report Type      | Date       |   Result  
+        -----------------|------------|----------
     """
     body_report = ''
     for code_duplication_percentage in get_code_duplications_percentage_by_date(
