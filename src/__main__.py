@@ -83,10 +83,14 @@ def get_code_duplications_percentage_by_date(
             check=True,
         )
         commit_analyzed = commit_to_analyze
-        code_duplications_percentage_by_date.append({
-            'DATE': date,
-            'CODE_DUPLICATION': get_code_duplication_percentage(directory_path),
-        })
+        code_duplications_percentage_by_date.append(
+            {
+                "DATE": date,
+                "CODE_DUPLICATION": get_code_duplication_percentage(
+                    directory_path
+                ),
+            }
+        )
     return code_duplications_percentage_by_date
 
 
@@ -98,7 +102,7 @@ def generate_debt_report(
         Report Type      | Date       |   Result  
         -----------------|------------|----------
     """
-    body_report = ''
+    body_report = ""
     for code_duplication_percentage in get_code_duplications_percentage_by_date(
         directory_path, start_date, end_date, interval_in_days
     ):
