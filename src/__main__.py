@@ -43,7 +43,7 @@ def get_dates_by_day_interval(start_date, end_date, interval_in_days):
 def get_commit_by_date(directory_path, date):
     return (
         subprocess.check_output(
-            f"cd '{directory_path}' && git rev-list -1 --before {date} feature-help",
+            f"cd '{directory_path}' && git rev-list -1 --before {date} master",
             shell=True,
         )
         .decode("utf-8")
@@ -55,7 +55,7 @@ def get_code_duplication_percentage(directory_path):
     code_duplication_report = (
         subprocess.check_output(
             f"jscpd '{directory_path}' --silent --ignore  "
-            '"**/*.json,**/*.yml,**/node_modules/**"',
+            '"**/*.json,**/*.yml,**/node_modules/**" --pattern "**/*.{js,jsx}"',
             shell=True,
         )
         .decode("utf-8")
