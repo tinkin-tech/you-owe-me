@@ -41,7 +41,7 @@ def get_dates_by_day_interval(start_date, end_date, interval_in_days):
 
 
 def get_commit_by_date(directory_path, date):
-    return (
+    commit = (
         subprocess.check_output(
             f"cd '{directory_path}' && git rev-list -1 --before {date} master",
             shell=True,
@@ -49,6 +49,13 @@ def get_commit_by_date(directory_path, date):
         .decode("utf-8")
         .strip()
     )
+    subprocess.run(
+        f"cd '{directory_path}' && git checkout {commit} --quiet --force",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        check=True,
+    )
+    return commit
 
 
 def get_code_duplication_percentage(directory_path):
@@ -66,7 +73,7 @@ def get_code_duplication_percentage(directory_path):
     ]
 
 
-def get_code_duplications_percentage_by_date(
+def get_debt_report_by_date(
     directory_path, start_date, end_date, interval_in_days
 ):
     commit_analyzed = ""
@@ -77,12 +84,6 @@ def get_code_duplications_percentage_by_date(
         commit_to_analyze = get_commit_by_date(directory_path, date)
         if commit_to_analyze == commit_analyzed:
             break
-        subprocess.run(
-            f"cd '{directory_path}' && git checkout {commit_to_analyze} --quiet --force",
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            check=True,
-        )
         commit_analyzed = commit_to_analyze
         code_duplications_percentage_by_date.append(
             {
@@ -104,7 +105,7 @@ def generate_debt_report(
         -----------------|------------|----------
     """
     report_body = ""
-    for code_duplication_percentage in get_code_duplications_percentage_by_date(
+    for code_duplication_percentage in get_debt_report_by_date(
         directory_path, start_date, end_date, interval_in_days
     ):
         report_body += f"""
