@@ -7,6 +7,7 @@ from constants.config import load_environment_variables
 from utils.write_csv_report import write_report_csv
 
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
+# TODO: poner en una variable global el nombre de la rama actual del directorio a analizar
 
 
 def has_more_than_one_element(list_):
@@ -40,7 +41,9 @@ def get_dates_by_day_interval(start_date, end_date, interval_in_days):
     return dates_by_day_interval
 
 
+# TODO: Cambiar todo lo que sea de git a un util
 def get_commit_by_date(directory_path, date):
+    # TODO: se debe utilizar la rama actual del directorio a analizar
     commit = (
         subprocess.check_output(
             f"cd '{directory_path}' && git rev-list -1 --before {date} master",
@@ -60,9 +63,10 @@ def get_commit_by_date(directory_path, date):
 
 def get_code_duplication_percentage(directory_path):
     code_duplication_report = (
+        # TODO: quitar el pattern
         subprocess.check_output(
             f"jscpd '{directory_path}' --silent --ignore  "
-            '"**/*.json,**/*.yml,**/node_modules/**" --pattern "**/*.{js,jsx}"',
+            '"**/*.json,**/*.yml,**/node_modules/**"',
             shell=True,
         )
         .decode("utf-8")
@@ -73,6 +77,7 @@ def get_code_duplication_percentage(directory_path):
     ]
 
 
+# TODO: Cambiar el nombre
 def get_debt_report_by_date(
     directory_path, start_date, end_date, interval_in_days
 ):
@@ -82,6 +87,7 @@ def get_debt_report_by_date(
         start_date, end_date, interval_in_days
     ):
         analyzed_commit = get_commit_by_date(directory_path, date)
+        # TODO: dependiendo de lo que diga Nico, quitar o dejar
         if analyzed_commit == previous_analyzed_commit:
             break
         previous_analyzed_commit = analyzed_commit
@@ -93,6 +99,7 @@ def get_debt_report_by_date(
                 ),
             }
         )
+
     return code_duplications_percentage_by_date
 
 
@@ -111,6 +118,7 @@ def generate_debt_report(
         report_body += f"""
         | {code_duplication_percentage['DATE']} |     {code_duplication_percentage['CODE_DUPLICATION']}       |
         -------------|-------------------"""
+        # TODO: quitar el reporte y dejar solo por consola
         write_report_csv(code_duplication_percentage)
     return f"{report_header}{report_body}"
 
