@@ -43,7 +43,7 @@ def get_dates_by_day_interval(start_date, end_date, interval_in_days):
 def get_commit_by_date(directory_path, date):
     return (
         subprocess.check_output(
-            f"cd '{directory_path}' && git rev-list -1 --before {date} develop",
+            f"cd '{directory_path}' && git rev-list -1 --before {date} feature-help",
             shell=True,
         )
         .decode("utf-8")
