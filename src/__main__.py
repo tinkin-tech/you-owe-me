@@ -65,18 +65,14 @@ def get_code_duplication_by_range_date(
     end_date,
     interval_in_days,
 ):
-    previous_analyzed_commit = ""
     code_duplications_percentage_by_date = []
     current_branch = get_current_branch(directory_path)
     for date in get_dates_by_day_interval(
         start_date, end_date, interval_in_days
     ):
-        analyzed_commit = get_commit_by_date(directory_path, date)
-        # TODO: dependiendo de lo que diga Nico, quitar o dejar
-        if analyzed_commit == previous_analyzed_commit:
-            break
-        previous_analyzed_commit = analyzed_commit
-        checkout_by_commit_or_branch(directory_path, analyzed_commit)
+        checkout_by_commit_or_branch(
+            directory_path, get_commit_by_date(directory_path, date)
+        )
         code_duplications_percentage_by_date.append(
             {
                 "DATE": date,
