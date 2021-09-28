@@ -24,7 +24,7 @@ line-length = 80
 [tool.taskipy.tasks]
 test = "python -m pytest"
 lint = 'find . -type f -name "*.py" | xargs pylint'
-start = 'poetry run python src/__main__.py'
+start = 'python src/__main__.py'
 
 [tool.pylint]
   [tool.pylint.master]
