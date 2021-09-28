@@ -3,8 +3,8 @@ import subprocess
 import re
 from os import path
 from datetime import timedelta
-from constants.config import load_environment_variables
-from utils.utils_git import (
+from src.constants.config import load_environment_variables
+from src.utils.utils_git import (
     get_commit_by_date,
     checkout_by_commit_or_branch,
     get_current_branch,
@@ -94,7 +94,7 @@ def generate_debt_report(
         directory_path, start_date, end_date, interval_in_days
     ):
         report_body += f"""
-        | {code_duplication_percentage['DATE']} |     {code_duplication_percentage['CODE_DUPLICATION']}       |
+        | {code_duplication_percentage['DATE']} |       {code_duplication_percentage['CODE_DUPLICATION']}        |
         -------------|-------------------"""
     return f"""
         -------------|-------------------
