@@ -3,7 +3,6 @@ import subprocess
 import re
 from os import path
 from datetime import timedelta
-sys.path.append("./")
 from src.constants.config import load_environment_variables
 from src.utils.utils_git import (
     get_commit_by_date,

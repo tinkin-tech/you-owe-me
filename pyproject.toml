@@ -25,7 +25,7 @@ line-length = 80
 [tool.taskipy.tasks]
 test = "python -m pytest"
 lint = 'find . -type f -name "*.py" | xargs pylint'
-start = 'python src/__main__.py'
+start = 'python -m src.__main__'
 
 [tool.pylint]
   [tool.pylint.master]
