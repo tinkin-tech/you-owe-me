@@ -1,9 +1,6 @@
 import os
-import sys
 from dotenv import load_dotenv
-
-sys.path.insert(0, "./")
-from src.utils.utils_date import validate_date_range, format_date
+from ..utils.utils_date import validate_date_range, format_date
 
 load_dotenv()
 
