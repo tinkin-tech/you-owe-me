@@ -1,0 +1,3 @@
+[submodule "tests/you-owe-me-test"]
+	path = tests/you-owe-me-test
+	url = https://github.com/tinkin-tech/you-owe-me-test.git

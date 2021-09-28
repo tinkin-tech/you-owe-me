@@ -5,7 +5,7 @@ from src.__main__ import generate_debt_report
 def test_code_duplication_percentage():
     assert (
         generate_debt_report(
-            "tests/demo-repository",
+            "tests/src",
             datetime.strptime("2021-09-24", "%Y-%m-%d"),
             datetime.strptime("2021-09-27", "%Y-%m-%d"),
             int(1),

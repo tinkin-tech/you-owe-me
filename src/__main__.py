@@ -39,8 +39,8 @@ def install_debt_report_dependencies():
 def get_dates_by_day_interval(start_date, end_date, interval_in_days):
     dates_by_day_interval = []
     while start_date <= end_date:
-        start_date = start_date + timedelta(days=interval_in_days)
         dates_by_day_interval.append(start_date.strftime("%Y-%m-%d"))
+        start_date = start_date + timedelta(days=interval_in_days)
     return dates_by_day_interval
 
 

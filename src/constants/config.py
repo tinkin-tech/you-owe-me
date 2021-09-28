@@ -1,8 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
-
-sys.path.insert(0, "./")
+sys.path.append("./")
 from src.utils.utils_date import validate_date_range, format_date
 
 load_dotenv()
@@ -28,5 +27,6 @@ def check_for_environment_variables(variables):
     for variable in variables:
         if os.getenv(variable) is None:
             raise ValueError(
-                f"Variable {variable} wasn't defined as an environment variable."
+                f"Variable {variable} wasn't defined as an environment "
+                "variable."
             )
