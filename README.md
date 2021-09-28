@@ -27,7 +27,29 @@ $ ./you_owe_me.sh [directoy_path_to_analyze]
 ```
 
 ### Run test suite
+
+Inside proetry shell, run the following command:
+
 ```bash
-$ ./run_tests.sh
+$ task test
 ```
 
+or
+
+```bash
+$ poetry run task test
+```
+
+### Run lint
+
+Inside poetry shell, run the following command:
+
+```bash
+$ task lint
+```
+
+or
+
+```bash
+$ poetry run task lint
+```
