@@ -3,9 +3,9 @@ import subprocess
 import re
 from os import path
 from src.constants.config import load_environment_variables
-from src.utils.utils_file import write_to_csv_report
-from src.utils.utils_date import get_dates_by_day_interval
-from src.utils.utils_git import (
+from src.utils.file import write_to_csv_report
+from src.utils.date import get_dates_by_day_interval
+from src.utils.git import (
     get_commit_by_date,
     checkout_by_commit_or_branch,
     get_current_branch,
