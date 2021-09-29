@@ -2,7 +2,7 @@
 .idea
 .vim
 
-# report
+#report
 /report/*.csv
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
