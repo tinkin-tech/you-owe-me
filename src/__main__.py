@@ -64,7 +64,8 @@ def get_code_duplication_by_range_date(
         start_date, end_date, interval_in_days
     ):
         checkout_by_commit_or_branch(
-            directory_path, get_commit_by_date(directory_path, date)
+            directory_path,
+            get_commit_by_date(directory_path, date, current_branch),
         )
         code_duplications_percentage_by_date.append(
             {
@@ -74,36 +75,30 @@ def get_code_duplication_by_range_date(
                 ),
             }
         )
-        checkout_by_commit_or_branch(directory_path, current_branch)
     return code_duplications_percentage_by_date
 
 
-def generate_debt_report(
-    directory_path, start_date, end_date, interval_in_days
-):
+def format_debt_report(code_duplication_list):
+    return f"Date;Code Duplication\n" + "\n".join(
+        [f"{code_duplication['DATE']};{code_duplication['CODE_DUPLICATION']}"
+        for code_duplication in code_duplication_list]
+    )
+
+
+def main():
+    env_variables = load_environment_variables()
     install_debt_report_dependencies()
-    report_body = ""
-    for code_duplication_percentage in get_code_duplication_by_range_date(
-        directory_path, start_date, end_date, interval_in_days
-    ):
-        report_body += f"""
-        | {code_duplication_percentage['DATE']} |       {code_duplication_percentage['CODE_DUPLICATION']}        
-        -------------|-------------------"""
-        write_to_csv_report(code_duplication_percentage)
-    return f"""
-        -------------|-------------------
-        |   Date     | Code Duplication |  
-        -------------|-------------------{report_body}
-    """
+    print(
+        format_debt_report(
+            get_code_duplication_by_range_date(
+                get_directory_path_to_analyze(),
+                env_variables["START_DATE"],
+                env_variables["END_DATE"],
+                env_variables["INTERVAL_IN_DAYS"],
+            )
+        )
+    )
 
 
 if __name__ == "__main__":
-    env_variables = load_environment_variables()
-    print(
-        generate_debt_report(
-            get_directory_path_to_analyze(),
-            env_variables["START_DATE"],
-            env_variables["END_DATE"],
-            env_variables["INTERVAL_IN_DAYS"],
-        )
-    )
+    main()
