@@ -70,9 +70,9 @@ def get_total_lines_of_code(report_code_lines):
     total_lines_row = remove_whitespace_from_text(
         re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
     )
-    total_lines_list = convert_number_string_to_number_list(
-        total_lines_row
-    )[1:3]
+    total_lines_list = convert_number_string_to_number_list(total_lines_row)[
+        1:3
+    ]
     return total_lines_list[0] - total_lines_list[1]
 
 
@@ -122,12 +122,15 @@ def get_debt_report_by_range_date(
 
 
 def format_debt_report(dept_list):
-    return "Date;Code Duplication;Implementation Lines;Test Lines; Total Lines\n" + "\n".join(
-        [
-            f"{dept['DATE']};{dept['CODE_DUPLICATION']};{dept['IMPLEMENTATION_LINES']};{dept['TEST_LINES']};"
-            f"{dept['TOTAL_LINES']}"
-            for dept in dept_list
-        ]
+    return (
+        "Date;Code Duplication;Implementation Lines;Test Lines; Total Lines\n"
+        + "\n".join(
+            [
+                f"{dept['DATE']};{dept['CODE_DUPLICATION']};{dept['IMPLEMENTATION_LINES']};{dept['TEST_LINES']};"
+                f"{dept['TOTAL_LINES']}"
+                for dept in dept_list
+            ]
+        )
     )
 
 
