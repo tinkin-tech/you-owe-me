@@ -75,6 +75,7 @@ def get_code_duplication_by_range_date(
                 ),
             }
         )
+    checkout_by_commit_or_branch(directory_path, current_branch)
     return code_duplications_percentage_by_date
 
 
