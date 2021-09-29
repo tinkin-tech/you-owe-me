@@ -87,7 +87,7 @@ def generate_debt_report(
         directory_path, start_date, end_date, interval_in_days
     ):
         report_body += f"""
-        | {code_duplication_percentage['DATE']} |       {code_duplication_percentage['CODE_DUPLICATION']}        |
+        | {code_duplication_percentage['DATE']} |       {code_duplication_percentage['CODE_DUPLICATION']}        
         -------------|-------------------"""
         write_to_csv_report(code_duplication_percentage)
     return f"""
