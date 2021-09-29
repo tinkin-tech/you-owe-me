@@ -53,3 +53,12 @@ or
 ```bash
 $ poetry run task lint
 ```
+
+### Initialize test submodule
+Inside the project, run the following commands:
+
+```bash
+$ git submodule init
+$ git submodule update
+```
+

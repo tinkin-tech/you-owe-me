@@ -2,6 +2,13 @@ import sys
 import subprocess
 import re
 from os import path
+from src.constants.config import load_environment_variables
+from src.utils.date import get_dates_by_day_interval
+from src.utils.git import (
+    get_commit_by_date,
+    checkout_by_commit_or_branch,
+    get_current_branch,
+)
 
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
 
@@ -44,14 +51,53 @@ def get_code_duplication_percentage(directory_path):
     ]
 
 
-def generate_debt_report(directory_path):
+def get_code_duplication_by_range_date(
+    directory_path,
+    start_date,
+    end_date,
+    interval_in_days,
+):
+    code_duplications_percentage_by_date = []
+    current_branch = get_current_branch(directory_path)
+    for date in get_dates_by_day_interval(
+        start_date, end_date, interval_in_days
+    ):
+        checkout_by_commit_or_branch(
+            directory_path,
+            get_commit_by_date(directory_path, date, current_branch),
+        )
+        code_duplications_percentage_by_date.append(
+            {
+                "DATE": date,
+                "CODE_DUPLICATION": get_code_duplication_percentage(
+                    directory_path
+                ),
+            }
+        )
+    checkout_by_commit_or_branch(directory_path, current_branch)
+    return code_duplications_percentage_by_date
+
+
+def format_debt_report(code_duplication_list):
+    return "Date;Code Duplication\n" + "\n".join(
+        [
+            f"{code_duplication['DATE']};{code_duplication['CODE_DUPLICATION']}"
+            for code_duplication in code_duplication_list
+        ]
+    )
+
+
+def main():
     install_debt_report_dependencies()
-    return f"""
-    Report Type      | Result
-    -----------------|-----------
-    Code Duplication | {get_code_duplication_percentage(directory_path)}
-    """
+    env_variables = load_environment_variables()
+    code_duplication_by_range = get_code_duplication_by_range_date(
+        get_directory_path_to_analyze(),
+        env_variables["START_DATE"],
+        env_variables["END_DATE"],
+        env_variables["INTERVAL_IN_DAYS"],
+    )
+    print(format_debt_report(code_duplication_by_range))
 
 
 if __name__ == "__main__":
-    print(generate_debt_report(get_directory_path_to_analyze()))
+    main()
