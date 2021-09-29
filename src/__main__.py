@@ -4,6 +4,7 @@ import re
 from os import path
 from datetime import timedelta
 from src.constants.config import load_environment_variables
+from src.utils.utils_file import write_to_csv_report
 from src.utils.utils_git import (
     get_commit_by_date,
     checkout_by_commit_or_branch,
@@ -96,6 +97,7 @@ def generate_debt_report(
         report_body += f"""
         | {code_duplication_percentage['DATE']} |       {code_duplication_percentage['CODE_DUPLICATION']}        |
         -------------|-------------------"""
+        write_to_csv_report(code_duplication_percentage)
     return f"""
         -------------|-------------------
         |   Date     | Code Duplication |  

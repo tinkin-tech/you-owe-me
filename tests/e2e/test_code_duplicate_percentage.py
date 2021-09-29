@@ -8,7 +8,7 @@ def test_code_duplication_percentage():
             "tests/you-owe-me-test",
             datetime.strptime("2021-09-24", "%Y-%m-%d"),
             datetime.strptime("2021-09-27", "%Y-%m-%d"),
-            int(1),
+            1,
         )
         == """
         -------------|-------------------
