@@ -2,9 +2,9 @@ import sys
 import subprocess
 import re
 from os import path
-from datetime import timedelta
 from src.constants.config import load_environment_variables
 from src.utils.utils_file import write_to_csv_report
+from src.utils.utils_date import get_dates_by_day_interval
 from src.utils.utils_git import (
     get_commit_by_date,
     checkout_by_commit_or_branch,
@@ -35,14 +35,6 @@ def install_debt_report_dependencies():
         stdout=subprocess.DEVNULL,
         check=True,
     )
-
-
-def get_dates_by_day_interval(start_date, end_date, interval_in_days):
-    dates_by_day_interval = []
-    while start_date <= end_date:
-        dates_by_day_interval.append(start_date.strftime("%Y-%m-%d"))
-        start_date = start_date + timedelta(days=interval_in_days)
-    return dates_by_day_interval
 
 
 def get_code_duplication_percentage(directory_path):

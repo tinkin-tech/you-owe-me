@@ -4,10 +4,7 @@ import subprocess
 def get_commit_by_date(directory_path, date):
     return (
         subprocess.check_output(
-            f"cd '{directory_path}' && git rev-parse --abbrev-ref HEAD "
-            "| xargs -I {} "
-            f" git rev-list -1 --before {date} "
-            " {}",
+            f"cd '{directory_path}' && git rev-list -1 --before {date} HEAD",
             shell=True,
         )
         .decode("utf-8")
