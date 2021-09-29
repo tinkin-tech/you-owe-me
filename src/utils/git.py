@@ -1,10 +1,11 @@
 import subprocess
 
 
-def get_commit_by_date(directory_path, date):
+def get_commit_by_date(directory_path, date, branch_name):
     return (
         subprocess.check_output(
-            f"cd '{directory_path}' && git rev-list -1 --before {date} HEAD",
+            f"cd '{directory_path}'"
+            f"&& git rev-list -1 --before {date} {branch_name}",
             shell=True,
         )
         .decode("utf-8")

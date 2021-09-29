@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from src.utils.utils_date import (
+from src.utils.date import (
     validate_date_range,
     parse_date_string_to_datetime,
 )

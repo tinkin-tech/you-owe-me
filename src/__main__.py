@@ -3,13 +3,8 @@ import subprocess
 import re
 from os import path
 from src.constants.config import load_environment_variables
-from src.utils.utils_file import write_to_csv_report
-from src.utils.utils_date import get_dates_by_day_interval
-from src.utils.utils_manage_string import (
-    convert_text_to_number_list,
-    remove_whitespace_from_text,
-)
-from src.utils.utils_git import (
+from src.utils.date import get_dates_by_day_interval
+from src.utils.git import (
     get_commit_by_date,
     checkout_by_commit_or_branch,
     get_current_branch,
@@ -104,7 +99,8 @@ def get_debts_information(
         start_date, end_date, interval_in_days
     ):
         checkout_by_commit_or_branch(
-            directory_path, get_commit_by_date(directory_path, date)
+            directory_path,
+            get_commit_by_date(directory_path, date, current_branch),
         )
 
         debts_information.append(
@@ -118,37 +114,30 @@ def get_debts_information(
                 ),
             }
         )
-        checkout_by_commit_or_branch(directory_path, current_branch)
-    return debts_information
+    checkout_by_commit_or_branch(directory_path, current_branch)
+    return code_duplications_percentage_by_date
 
 
-def generate_debt_report(
-    directory_path, start_date, end_date, interval_in_days, file_extensions
-):
+def format_debt_report(code_duplication_list):
+    return "Date;Code Duplication\n" + "\n".join(
+        [
+            f"{code_duplication['DATE']};{code_duplication['CODE_DUPLICATION']}"
+            for code_duplication in code_duplication_list
+        ]
+    )
+
+
+def main():
     install_debt_report_dependencies()
-    report_body = ""
-    for dept in get_debts_information(
-        directory_path, start_date, end_date, interval_in_days, file_extensions
-    ):
-        report_body += f"""
-        | {dept['DATE']}      {dept['CODE_DUPLICATION']}                 {dept['IMPLEMENTATION_LINES']}             {dept['TEST_LINES']}           {dept['TOTAL_LINES']} 
-        ---------------------------------------------------------------------------------------
-        """
-    return f"""
-        -------------|------------------|-----------------------|-------------|---------------|
-        |   Date       Code Duplication    Implementation Lines    Test Lines    Total Lines
-        -------------|------------------|-----------------------|-------------|---------------|{report_body}
-    """
+    env_variables = load_environment_variables()
+    code_duplication_by_range = get_code_duplication_by_range_date(
+        get_directory_path_to_analyze(),
+        env_variables["START_DATE"],
+        env_variables["END_DATE"],
+        env_variables["INTERVAL_IN_DAYS"],
+    )
+    print(format_debt_report(code_duplication_by_range))
 
 
 if __name__ == "__main__":
-    env_variables = load_environment_variables()
-    print(
-        generate_debt_report(
-            get_directory_path_to_analyze(),
-            env_variables["START_DATE"],
-            env_variables["END_DATE"],
-            env_variables["INTERVAL_IN_DAYS"],
-            env_variables["FILE_EXTENSIONS"],
-        )
-    )
+    main()
