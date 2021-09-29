@@ -126,8 +126,9 @@ def format_debt_report(dept_list):
         "Date;Code Duplication;Implementation Lines;Test Lines; Total Lines\n"
         + "\n".join(
             [
-                f"{dept['DATE']};{dept['CODE_DUPLICATION']};{dept['IMPLEMENTATION_LINES']};{dept['TEST_LINES']};"
-                f"{dept['TOTAL_LINES']}"
+                f"{dept['DATE']};{dept['CODE_DUPLICATION']};"
+                f"{dept['IMPLEMENTATION_LINES']};"
+                f"{dept['TEST_LINES']};{dept['TOTAL_LINES']}"
                 for dept in dept_list
             ]
         )
