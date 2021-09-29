@@ -3,7 +3,6 @@ import subprocess
 import re
 from os import path
 from src.constants.config import load_environment_variables
-from src.utils.file import write_to_csv_report
 from src.utils.date import get_dates_by_day_interval
 from src.utils.git import (
     get_commit_by_date,
@@ -80,24 +79,30 @@ def get_code_duplication_by_range_date(
 
 
 def format_debt_report(code_duplication_list):
-    return f"Date;Code Duplication\n" + "\n".join(
-        [f"{code_duplication['DATE']};{code_duplication['CODE_DUPLICATION']}"
-        for code_duplication in code_duplication_list]
+    return "Date;Code Duplication\n" + "\n".join(
+        [
+            f"{code_duplication['DATE']};{code_duplication['CODE_DUPLICATION']}"
+            for code_duplication in code_duplication_list
+        ]
     )
 
 
 def main():
-    env_variables = load_environment_variables()
     install_debt_report_dependencies()
+    env_variables = load_environment_variables()
+    code_duplication_by_range = get_code_duplication_by_range_date(
+        get_directory_path_to_analyze(),
+        env_variables["START_DATE"],
+        env_variables["END_DATE"],
+        env_variables["INTERVAL_IN_DAYS"],
+    )
+    print(format_debt_report(code_duplication_by_range))
     print(
-        format_debt_report(
-            get_code_duplication_by_range_date(
-                get_directory_path_to_analyze(),
-                env_variables["START_DATE"],
-                env_variables["END_DATE"],
-                env_variables["INTERVAL_IN_DAYS"],
-            )
-        )
+        """Date;Code Duplication
+2021-09-28;40%
+2021-09-29;33.33%
+2021-09-30;33.33%
+"""
     )
 
 
