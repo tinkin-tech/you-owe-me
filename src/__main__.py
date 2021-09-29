@@ -97,13 +97,6 @@ def main():
         env_variables["INTERVAL_IN_DAYS"],
     )
     print(format_debt_report(code_duplication_by_range))
-    print(
-        """Date;Code Duplication
-2021-09-28;40%
-2021-09-29;33.33%
-2021-09-30;33.33%
-"""
-    )
 
 
 if __name__ == "__main__":
