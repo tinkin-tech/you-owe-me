@@ -4,7 +4,7 @@ import re
 from os import path
 from src.constants.config import load_environment_variables
 from src.utils.date import get_dates_by_day_interval
-from src.utils.manage_string import (
+from src.utils.string import (
     remove_whitespace_from_text,
     convert_number_string_to_number_list,
 )
