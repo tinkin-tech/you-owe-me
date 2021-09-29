@@ -7,7 +7,12 @@ from src.utils.date import (
 
 load_dotenv()
 
-ENVIRONMENT_VARIABLE_NAMES = ["START_DATE", "END_DATE", "INTERVAL_IN_DAYS"]
+ENVIRONMENT_VARIABLE_NAMES = [
+    "START_DATE",
+    "END_DATE",
+    "INTERVAL_IN_DAYS",
+    "FILE_EXTENSIONS",
+]
 
 
 def load_environment_variables():
