@@ -15,5 +15,5 @@ def test_debt_report():
         == "Date;Code Duplication;Implementation Lines;"
         "Test Lines; Total Lines\n"
         "2021-09-28;40%;0;19;19\n2021-09-29;33.33%;3;31;34\n"
-        "2021-09-30;33.33%;3;31;34"
+        "2021-09-30;30.77%;3;40;43"
     )

@@ -3,7 +3,7 @@ import subprocess
 import re
 from os import path
 from src.constants.config import load_environment_variables
-from src.utils.date import get_dates_by_day_interval
+from src.utils.date import get_dates_by_day_interval, subtract_day_to_date
 from src.utils.string import (
     remove_whitespace_from_text,
     convert_number_string_to_number_list,
@@ -108,7 +108,7 @@ def get_debt_report_by_range_date(
         )
         debt_report.append(
             {
-                "DATE": date,
+                "DATE": subtract_day_to_date(date, 1),
                 "CODE_DUPLICATION": get_code_duplication_percentage(
                     directory_path
                 ),
