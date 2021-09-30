@@ -138,14 +138,14 @@ def format_debt_report(dept_list):
 def main():
     install_debt_report_dependencies()
     env_variables = load_environment_variables()
-    code_duplication_by_range = get_debt_report_by_range_date(
+    debt_report_by_range = get_debt_report_by_range_date(
         get_directory_path_to_analyze(),
         env_variables["START_DATE"],
         env_variables["END_DATE"],
         env_variables["INTERVAL_IN_DAYS"],
         env_variables["FILE_EXTENSIONS"],
     )
-    print(format_debt_report(code_duplication_by_range))
+    print(format_debt_report(debt_report_by_range))
 
 
 if __name__ == "__main__":
