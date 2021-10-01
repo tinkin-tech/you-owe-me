@@ -16,6 +16,7 @@ from src.utils.git import (
 
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
 REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
+REGEX_TO_DEEPEST_VALUE_NESTED_INSIDE_JSON = "(?<=\{)\s*[^{]*?(?=[\}])"
 
 
 def has_more_than_one_element(list_):
@@ -90,6 +91,27 @@ def get_implementation_and_test_lines(directory_path, file_extensions):
     }
 
 
+def get_percentage_coverage(directory_path):
+    subprocess.run(
+        f"cd {directory_path} "
+        '&& npx jest --coverage --silent --coverageReporters="json-summary"',
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT,
+        check=True,
+    )
+    coverage_report_summary = subprocess.check_output(
+        f"cd {directory_path} && cat coverage/coverage-summary.json | head -1",
+        shell=True,
+    ).decode("utf-8")
+    # get total, covered, skipped, pct separated by "," from LINES
+    summary_lines_coverage = re.findall(
+        REGEX_TO_DEEPEST_VALUE_NESTED_INSIDE_JSON,
+        coverage_report_summary.strip(),
+    )[0]
+    return summary_lines_coverage.split(",")[3].split(":")[1]
+
+
 def get_debt_report_by_range_date(
     directory_path,
     start_date,
@@ -112,6 +134,7 @@ def get_debt_report_by_range_date(
                 "CODE_DUPLICATION": get_code_duplication_percentage(
                     directory_path
                 ),
+                "COVERAGE": get_percentage_coverage(directory_path),
                 **get_implementation_and_test_lines(
                     directory_path, file_extensions
                 ),
@@ -123,11 +146,11 @@ def get_debt_report_by_range_date(
 
 def format_debt_report(dept_list):
     return (
-        "Date;Code Duplication;Implementation Lines;Test Lines; Total Lines\n"
+        "Date;Code Duplication;Coverage;Implementation Lines;Test Lines; Total Lines\n"
         + "\n".join(
             [
                 f"{dept['DATE']};{dept['CODE_DUPLICATION']};"
-                f"{dept['IMPLEMENTATION_LINES']};"
+                f"{dept['COVERAGE']};{dept['IMPLEMENTATION_LINES']};"
                 f"{dept['TEST_LINES']};{dept['TOTAL_LINES']}"
                 for dept in dept_list
             ]
