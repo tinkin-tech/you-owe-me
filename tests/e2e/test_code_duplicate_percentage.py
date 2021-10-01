@@ -1,6 +1,5 @@
-from src.__main__ import get_code_duplication_percentage
+from src.__main__ import get_percentage_code_duplication
 
 
 def test_code_duplication_percentage():
-    get_code_duplication_percentage("tests/")
-    assert get_code_duplication_percentage("tests/fixtures") == "30.77%"
+    assert get_percentage_code_duplication("tests/fixtures") == "9.43%"
