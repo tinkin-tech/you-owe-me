@@ -16,7 +16,7 @@ from src.utils.git import (
 
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
 REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
-REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JSON = "(?<=\{)\s*[^{]*?(?=[\}])"
+REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JSON = "(?<=\\{)\\s*[^{]*?(?=[\\}])"
 
 
 def has_more_than_one_element(list_):
