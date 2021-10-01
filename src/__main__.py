@@ -40,6 +40,12 @@ def install_debt_report_dependencies():
         stdout=subprocess.DEVNULL,
         check=True,
     )
+    subprocess.run(
+        "npm list -g jest || npm i -g jest@latest",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        check=True,
+    )
 
 
 def get_percentage_code_duplication(directory_path):
@@ -49,8 +55,8 @@ def get_percentage_code_duplication(directory_path):
             '"**/*.json,**/*.yml,**/node_modules/**"',
             shell=True,
         )
-            .decode("utf-8")
-            .strip()
+        .decode("utf-8")
+        .strip()
     )
     return re.findall(REGEX_TO_FIND_PERCENTAGE_NUMBER, code_duplication_report)[
         0
@@ -58,7 +64,7 @@ def get_percentage_code_duplication(directory_path):
 
 
 def get_report_of_code_lines(
-        directory_path, file_extensions, analyze_test_files=False
+    directory_path, file_extensions, analyze_test_files=False
 ):
     return subprocess.check_output(
         f'scc "{directory_path}" --include-ext="{file_extensions}" '
@@ -72,8 +78,8 @@ def get_total_lines_of_code(report_code_lines):
         re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
     )
     total_lines_list = convert_number_string_to_number_list(total_lines_row)[
-                       1:3
-                       ]
+        1:3
+    ]
     return total_lines_list[0] - total_lines_list[1]
 
 
@@ -113,16 +119,16 @@ def get_coverage_percentage(directory_path):
 
 
 def get_debt_report_by_range_date(
-        directory_path,
-        start_date,
-        end_date,
-        interval_in_days,
-        file_extensions,
+    directory_path,
+    start_date,
+    end_date,
+    interval_in_days,
+    file_extensions,
 ):
     debt_report = []
     current_branch = get_current_branch(directory_path)
     for date in get_dates_by_day_interval(
-            start_date, end_date, interval_in_days
+        start_date, end_date, interval_in_days
     ):
         checkout_by_commit_or_branch(
             directory_path,
@@ -146,16 +152,16 @@ def get_debt_report_by_range_date(
 
 def format_debt_report(dept_list):
     return (
-            "Date;Code Duplication;Coverage;Implementation Lines;"
-            "Test Lines;Total Lines\n"
-            + "\n".join(
-        [
-            f"{dept['DATE']};{dept['CODE_DUPLICATION']};"
-            f"{dept['COVERAGE']};{dept['IMPLEMENTATION_LINES']};"
-            f"{dept['TEST_LINES']};{dept['TOTAL_LINES']}"
-            for dept in dept_list
-        ]
-    )
+        "Date;Code Duplication;Coverage;Implementation Lines;"
+        "Test Lines;Total Lines\n"
+        + "\n".join(
+            [
+                f"{dept['DATE']};{dept['CODE_DUPLICATION']};"
+                f"{dept['COVERAGE']};{dept['IMPLEMENTATION_LINES']};"
+                f"{dept['TEST_LINES']};{dept['TOTAL_LINES']}"
+                for dept in dept_list
+            ]
+        )
     )
 
 
