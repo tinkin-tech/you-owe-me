@@ -17,6 +17,7 @@ from src.utils.git import (
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
 REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
 global DIRECTORY_PATH
+global FILE_EXTENSIONS
 
 
 def has_more_than_one_element(list_):
@@ -57,11 +58,9 @@ def get_code_duplication_percentage():
     ]
 
 
-def get_report_of_code_lines(
-    file_extensions, exclude_test_files=False
-):
+def get_report_of_code_lines(exclude_test_files=False):
     return subprocess.check_output(
-        f'scc "{DIRECTORY_PATH}" --include-ext="{file_extensions}" '
+        f'scc "{DIRECTORY_PATH}" --include-ext="{FILE_EXTENSIONS}" '
         f'{"--exclude-dir=test" if exclude_test_files else ""}',
         shell=True,
     ).decode("utf-8")
@@ -71,17 +70,15 @@ def get_total_lines_of_code(report_code_lines):
     total_lines_row = remove_whitespace_from_text(
         re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
     )
-    total_lines, blank_lines = convert_number_string_to_number_list(total_lines_row)[1:3]
+    total_lines, blank_lines = convert_number_string_to_number_list(
+        total_lines_row
+    )[1:3]
     return total_lines - blank_lines
 
 
-def get_implementation_and_test_lines(file_extensions):
-    total_lines = get_total_lines_of_code(
-        get_report_of_code_lines(file_extensions)
-    )
-    test_lines = get_total_lines_of_code(
-        get_report_of_code_lines(file_extensions, True)
-    )
+def get_implementation_and_test_lines():
+    total_lines = get_total_lines_of_code(get_report_of_code_lines())
+    test_lines = get_total_lines_of_code(get_report_of_code_lines(True))
     return {
         "IMPLEMENTATION_LINES": total_lines - test_lines,
         "TEST_LINES": test_lines,
@@ -93,7 +90,6 @@ def get_debt_report_by_range_date(
     start_date,
     end_date,
     interval_in_days,
-    file_extensions,
 ):
     debt_report = []
     current_branch = get_current_branch(DIRECTORY_PATH)
@@ -108,9 +104,7 @@ def get_debt_report_by_range_date(
             {
                 "DATE": subtract_day_to_date(date, 1),
                 "CODE_DUPLICATION": get_code_duplication_percentage(),
-                **get_implementation_and_test_lines(
-                    file_extensions
-                ),
+                **get_implementation_and_test_lines(),
             }
         )
     checkout_by_commit_or_branch(DIRECTORY_PATH, current_branch)
@@ -138,11 +132,11 @@ def main():
         env_variables["START_DATE"],
         env_variables["END_DATE"],
         env_variables["INTERVAL_IN_DAYS"],
-        env_variables["FILE_EXTENSIONS"],
     )
     print(format_debt_report(debt_report_by_range))
 
 
 if __name__ == "__main__":
     DIRECTORY_PATH = get_directory_path_to_analyze()
+    FILE_EXTENSIONS = load_environment_variables()["FILE_EXTENSIONS"]
     main()
