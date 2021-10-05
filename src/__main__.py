@@ -7,6 +7,7 @@ from src.utils.date import get_dates_by_day_interval, subtract_day_to_date
 from src.utils.string import (
     remove_whitespace_from_text,
     convert_number_string_to_number_list,
+    convert_string_to_list_by_separator,
 )
 from src.utils.git import (
     get_commit_by_date,
@@ -64,11 +65,11 @@ def get_percentage_code_duplication(directory_path):
 
 
 def get_report_of_code_lines(
-    directory_path, file_extensions, analyze_test_files=False
+    directory_path, file_extensions, exclude_test_files=False
 ):
     return subprocess.check_output(
         f'scc "{directory_path}" --include-ext="{file_extensions}" '
-        f'{"--exclude-dir=test" if analyze_test_files else ""}',
+        f'{"--exclude-dir=test" if exclude_test_files else ""}',
         shell=True,
     ).decode("utf-8")
 
@@ -77,10 +78,10 @@ def get_total_lines_of_code(report_code_lines):
     total_lines_row = remove_whitespace_from_text(
         re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
     )
-    total_lines_list = convert_number_string_to_number_list(total_lines_row)[
-        1:3
-    ]
-    return total_lines_list[0] - total_lines_list[1]
+    total_lines, commented_lines = convert_number_string_to_number_list(
+        total_lines_row, ","
+    )[1:3]
+    return total_lines - commented_lines
 
 
 def get_implementation_and_test_lines(directory_path, file_extensions):
@@ -110,12 +111,15 @@ def get_coverage_percentage(directory_path):
         f"cd {directory_path} && cat coverage/coverage-summary.json | head -1",
         shell=True,
     ).decode("utf-8")
-    # get total, covered, skipped, pct separated by "," from LINES
-    summary_lines_coverage = re.findall(
-        REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JSON,
-        coverage_report_summary.strip(),
-    )[0]
-    return f"{summary_lines_coverage.split(',')[3].split(':')[1]}%"
+    summary_lines_coverage = convert_string_to_list_by_separator(
+        # get total, covered, skipped, pct separated by "," from LINES
+        re.findall(
+            REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JSON,
+            coverage_report_summary.strip(),
+        )[0],
+        ",",
+    )[3]
+    return f"{convert_string_to_list_by_separator(summary_lines_coverage, ':')[1]}%"
 
 
 def get_debt_report_by_range_date(

@@ -5,11 +5,6 @@
 1. Check if you have Python version 3 installed. Read official [documentation](https://www.python.org/downloads/).
 2. Install Poetry version 1.1 or higher. Read official [documentation](https://python-poetry.org/docs/).
 
-## Dependencies
-### SCC
-
-To install the SCC tool, follow the steps described [here](https://github.com/boyter/scc), which is the official documentation
-
 ## Install project dependencies
 
 To install project dependencies, run the following command:
@@ -22,6 +17,10 @@ Then run the following command, so that all subsequent commands may run in the v
 ```bash
 $ poetry shell
 ```
+
+#### SCC
+
+To install the SCC tool, follow the steps described [here](https://github.com/boyter/scc), which is the official documentation
 
 ## Run project
 
