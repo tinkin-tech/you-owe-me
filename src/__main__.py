@@ -14,8 +14,9 @@ from src.utils.git import (
     get_current_branch,
 )
 
-REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
-REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
+global REGEX_TO_FIND_PERCENTAGE_NUMBER
+global REGEX_TO_MATCH_WITH_ROW_TOTALS
+global DIRECTORY_PATH
 
 
 def has_more_than_one_element(list_):
@@ -41,10 +42,10 @@ def install_debt_report_dependencies():
     )
 
 
-def get_code_duplication_percentage(directory_path):
+def get_code_duplication_percentage():
     code_duplication_report = (
         subprocess.check_output(
-            f"jscpd '{directory_path}' --silent --ignore  "
+            f"jscpd '{DIRECTORY_PATH}' --silent --ignore  "
             '"**/*.json,**/*.yml,**/node_modules/**"',
             shell=True,
         )
@@ -57,10 +58,10 @@ def get_code_duplication_percentage(directory_path):
 
 
 def get_report_of_code_lines(
-    directory_path, file_extensions, exclude_test_files=False
+    file_extensions, exclude_test_files=False
 ):
     return subprocess.check_output(
-        f'scc "{directory_path}" --include-ext="{file_extensions}" '
+        f'scc "{DIRECTORY_PATH}" --include-ext="{file_extensions}" '
         f'{"--exclude-dir=test" if exclude_test_files else ""}',
         shell=True,
     ).decode("utf-8")
@@ -74,12 +75,12 @@ def get_total_lines_of_code(report_code_lines):
     return total_lines - blank_lines
 
 
-def get_implementation_and_test_lines(directory_path, file_extensions):
+def get_implementation_and_test_lines(file_extensions):
     total_lines = get_total_lines_of_code(
-        get_report_of_code_lines(directory_path, file_extensions)
+        get_report_of_code_lines(file_extensions)
     )
     test_lines = get_total_lines_of_code(
-        get_report_of_code_lines(directory_path, file_extensions, True)
+        get_report_of_code_lines(file_extensions, True)
     )
     return {
         "IMPLEMENTATION_LINES": total_lines - test_lines,
@@ -89,33 +90,30 @@ def get_implementation_and_test_lines(directory_path, file_extensions):
 
 
 def get_debt_report_by_range_date(
-    directory_path,
     start_date,
     end_date,
     interval_in_days,
     file_extensions,
 ):
     debt_report = []
-    current_branch = get_current_branch(directory_path)
+    current_branch = get_current_branch(DIRECTORY_PATH)
     for date in get_dates_by_day_interval(
         start_date, end_date, interval_in_days
     ):
         checkout_by_commit_or_branch(
-            directory_path,
-            get_commit_by_date(directory_path, date, current_branch),
+            DIRECTORY_PATH,
+            get_commit_by_date(DIRECTORY_PATH, date, current_branch),
         )
         debt_report.append(
             {
                 "DATE": subtract_day_to_date(date, 1),
-                "CODE_DUPLICATION": get_code_duplication_percentage(
-                    directory_path
-                ),
+                "CODE_DUPLICATION": get_code_duplication_percentage(),
                 **get_implementation_and_test_lines(
-                    directory_path, file_extensions
+                    file_extensions
                 ),
             }
         )
-    checkout_by_commit_or_branch(directory_path, current_branch)
+    checkout_by_commit_or_branch(DIRECTORY_PATH, current_branch)
     return debt_report
 
 
@@ -137,7 +135,6 @@ def main():
     install_debt_report_dependencies()
     env_variables = load_environment_variables()
     debt_report_by_range = get_debt_report_by_range_date(
-        get_directory_path_to_analyze(),
         env_variables["START_DATE"],
         env_variables["END_DATE"],
         env_variables["INTERVAL_IN_DAYS"],
@@ -147,4 +144,7 @@ def main():
 
 
 if __name__ == "__main__":
+    REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
+    REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
+    DIRECTORY_PATH = get_directory_path_to_analyze()
     main()
