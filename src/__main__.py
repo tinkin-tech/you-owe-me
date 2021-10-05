@@ -57,11 +57,11 @@ def get_code_duplication_percentage(directory_path):
 
 
 def get_report_of_code_lines(
-    directory_path, file_extensions, analyze_test_files=False
+    directory_path, file_extensions, exclude_test_files=False
 ):
     return subprocess.check_output(
         f'scc "{directory_path}" --include-ext="{file_extensions}" '
-        f'{"--exclude-dir=test" if analyze_test_files else ""}',
+        f'{"--exclude-dir=test" if exclude_test_files else ""}',
         shell=True,
     ).decode("utf-8")
 
@@ -70,10 +70,8 @@ def get_total_lines_of_code(report_code_lines):
     total_lines_row = remove_whitespace_from_text(
         re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
     )
-    total_lines_list = convert_number_string_to_number_list(total_lines_row)[
-        1:3
-    ]
-    return total_lines_list[0] - total_lines_list[1]
+    total_lines, blank_lines = convert_number_string_to_number_list(total_lines_row)[1:3]
+    return total_lines - blank_lines
 
 
 def get_implementation_and_test_lines(directory_path, file_extensions):
