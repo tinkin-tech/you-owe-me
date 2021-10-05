@@ -14,8 +14,8 @@ from src.utils.git import (
     get_current_branch,
 )
 
-global REGEX_TO_FIND_PERCENTAGE_NUMBER
-global REGEX_TO_MATCH_WITH_ROW_TOTALS
+REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
+REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
 global DIRECTORY_PATH
 
 
@@ -144,7 +144,5 @@ def main():
 
 
 if __name__ == "__main__":
-    REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
-    REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
     DIRECTORY_PATH = get_directory_path_to_analyze()
     main()
