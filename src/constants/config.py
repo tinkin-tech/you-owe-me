@@ -29,7 +29,9 @@ def load_environment_variables():
         "END_DATE": end_date,
         "INTERVAL_IN_DAYS": int(os.getenv("INTERVAL_IN_DAYS")),
         "PATTERN_TEST_FILES": os.getenv("PATTERN_TEST_FILES"),
-        "PATTERN_IMPLEMENTATION_FILES": os.getenv("PATTERN_IMPLEMENTATION_FILES"),
+        "PATTERN_IMPLEMENTATION_FILES": os.getenv(
+            "PATTERN_IMPLEMENTATION_FILES"
+        ),
         "FILE_EXTENSIONS": os.getenv("FILE_EXTENSIONS"),
     }
 
