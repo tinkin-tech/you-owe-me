@@ -1,3 +1,4 @@
 [submodule "tests/fixtures"]
 	path = tests/fixtures
 	url = https://github.com/tinkin-tech/you-owe-me-test.git
+	branch = master
