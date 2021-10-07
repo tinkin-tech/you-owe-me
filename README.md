@@ -20,7 +20,7 @@ $ poetry shell
 
 ### SCC
 
-To install the SCC tool, follow the steps described [here](https://github.com/boyter/scc), which is the official documentation
+To install the SCC tool, follow the steps described [here](https://github.com/boyter/scc), which is the official documentation.
 
 ## Run project
 
