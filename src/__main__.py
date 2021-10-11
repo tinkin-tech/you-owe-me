@@ -133,7 +133,7 @@ def get_debt_report_by_range_date(
     return debt_report
 
 
-def format_debt_report(debt_list):
+def format_debt_report(debts):
     return (
         "Date;Code Duplication;Implementation Lines;Test Lines; Total Lines\n"
         + "\n".join(
@@ -141,7 +141,7 @@ def format_debt_report(debt_list):
                 f"{debt['DATE']};{debt['CODE_DUPLICATION']};"
                 f"{debt['IMPLEMENTATION_LINES']};"
                 f"{debt['TEST_LINES']};{debt['TOTAL_LINES']}"
-                for debt in debt_list
+                for debt in debts
             ]
         )
     )

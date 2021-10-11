@@ -64,6 +64,6 @@ Inside the project, run the following commands:
 ```bash
 $ git submodule init
 $ git submodule update
-$ git submodule foreach -q --recursive 'branch="$(git config -f $toplevel/.gitmodules submodule.$name.branch)"; git switch $branch'
+$ git submodule foreach -q --recursive 'branch="$(git config -f $toplevel/.gitmodules submodule.$name.branch)"; git switch $branch' // Allows you to switch to the branch that is set by default in the '.gitmodules' file. This prevents the user from enter to the submodule to checkout to a specific branch.
 ```
 
