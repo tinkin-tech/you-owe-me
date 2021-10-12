@@ -85,7 +85,7 @@ def get_total_lines_of_code(report_code_lines):
         re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
     )
     total_lines, blank_lines = convert_number_string_to_number_list(
-        total_lines_row
+        total_lines_row, ","
     )[1:3]
     return total_lines - blank_lines
 
@@ -117,15 +117,19 @@ def get_coverage_percentage(directory_path):
         f"cd {directory_path} && cat coverage/coverage-summary.json | head -1",
         shell=True,
     ).decode("utf-8")
+    # get total, covered, skipped, pct separated by "," from LINES REPORT
+    report_of_lines = re.findall(
+        REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JSON,
+        coverage_report_summary.strip(),
+    )[0]
     summary_lines_coverage = convert_string_to_list_by_separator(
-        # get total, covered, skipped, pct separated by "," from LINES
-        re.findall(
-            REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JSON,
-            coverage_report_summary.strip(),
-        )[0],
+        report_of_lines,
         ",",
     )[3]
-    return f"{convert_string_to_list_by_separator(summary_lines_coverage, ':')[1]}%"
+    coverage = convert_string_to_list_by_separator(summary_lines_coverage, ":")[
+        1
+    ]
+    return f"{coverage}%"
 
 
 def get_debt_report_by_range_date(
@@ -150,7 +154,6 @@ def get_debt_report_by_range_date(
                 "CODE_DUPLICATION": get_percentage_code_duplication(
                     directory_path
                 ),
-                "COVERAGE": get_coverage_percentage(directory_path),
                 "IMPLEMENTATION_LINES": get_implementation_and_test_lines(
                     directory_path, file_extensions, "implementation_lines"
                 ),
@@ -160,6 +163,7 @@ def get_debt_report_by_range_date(
                 "TOTAL_LINES": get_implementation_and_test_lines(
                     directory_path, file_extensions, "total_lines"
                 ),
+                "COVERAGE": get_coverage_percentage(directory_path),
             }
         )
     checkout_by_commit_or_branch(directory_path, current_branch)
@@ -168,13 +172,14 @@ def get_debt_report_by_range_date(
 
 def format_debt_report(debts):
     return (
-        "Date;Code Duplication;Coverage;Implementation Lines;"
-        "Test Lines;Total Lines\n"
+        "Date;Code Duplication;Implementation Lines;"
+        "Test Lines;Total Lines;Coverage\n"
         + "\n".join(
             [
                 f"{debt['DATE']};{debt['CODE_DUPLICATION']};"
                 f"{debt['IMPLEMENTATION_LINES']};"
-                f"{debt['TEST_LINES']};{debt['TOTAL_LINES']}"
+                f"{debt['TEST_LINES']};{debt['TOTAL_LINES']};"
+                f"{debt['COVERAGE']}"
                 for debt in debts
             ]
         )
