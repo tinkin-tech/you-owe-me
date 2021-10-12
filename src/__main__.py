@@ -64,38 +64,44 @@ def get_percentage_code_duplication(directory_path):
     ]
 
 
-def get_report_of_code_lines(
-    directory_path, file_extensions, exclude_test_files=False
-):
+def get_report_of_code_lines(directory_path, file_extensions, exclude_test):
     return subprocess.check_output(
         f'scc "{directory_path}" --include-ext="{file_extensions}" '
-        f'{"--exclude-dir=test" if exclude_test_files else ""}',
+        f"{'--exclude-dir=test' if exclude_test else ''}",
         shell=True,
     ).decode("utf-8")
+
+
+def get_report_implementation_lines(directory_path, file_extensions):
+    return get_report_of_code_lines(directory_path, file_extensions, True)
+
+
+def get_report_total_lines(directory_path, file_extensions):
+    return get_report_of_code_lines(directory_path, file_extensions, False)
 
 
 def get_total_lines_of_code(report_code_lines):
     total_lines_row = remove_whitespace_from_text(
         re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
     )
-    total_lines, commented_lines = convert_number_string_to_number_list(
-        total_lines_row, ","
+    total_lines, blank_lines = convert_number_string_to_number_list(
+        total_lines_row
     )[1:3]
-    return total_lines - commented_lines
+    return total_lines - blank_lines
 
 
-def get_implementation_and_test_lines(directory_path, file_extensions):
+def get_implementation_and_test_lines(directory_path, file_extensions, type_):
     total_lines = get_total_lines_of_code(
-        get_report_of_code_lines(directory_path, file_extensions)
+        get_report_total_lines(directory_path, file_extensions)
     )
-    test_lines = get_total_lines_of_code(
-        get_report_of_code_lines(directory_path, file_extensions, True)
+    implementation_lines = get_total_lines_of_code(
+        get_report_implementation_lines(directory_path, file_extensions)
     )
     return {
-        "IMPLEMENTATION_LINES": total_lines - test_lines,
-        "TEST_LINES": test_lines,
-        "TOTAL_LINES": total_lines,
-    }
+        "implementation_lines": implementation_lines,
+        "test_lines": total_lines - implementation_lines,
+        "total_lines": total_lines,
+    }.get(type_)
 
 
 def get_coverage_percentage(directory_path):
@@ -124,10 +130,10 @@ def get_coverage_percentage(directory_path):
 
 def get_debt_report_by_range_date(
     directory_path,
+    file_extensions,
     start_date,
     end_date,
     interval_in_days,
-    file_extensions,
 ):
     debt_report = []
     current_branch = get_current_branch(directory_path)
@@ -145,8 +151,14 @@ def get_debt_report_by_range_date(
                     directory_path
                 ),
                 "COVERAGE": get_coverage_percentage(directory_path),
-                **get_implementation_and_test_lines(
-                    directory_path, file_extensions
+                "IMPLEMENTATION_LINES": get_implementation_and_test_lines(
+                    directory_path, file_extensions, "implementation_lines"
+                ),
+                "TEST_LINES": get_implementation_and_test_lines(
+                    directory_path, file_extensions, "test_lines"
+                ),
+                "TOTAL_LINES": get_implementation_and_test_lines(
+                    directory_path, file_extensions, "total_lines"
                 ),
             }
         )
@@ -154,16 +166,16 @@ def get_debt_report_by_range_date(
     return debt_report
 
 
-def format_debt_report(dept_list):
+def format_debt_report(debts):
     return (
         "Date;Code Duplication;Coverage;Implementation Lines;"
         "Test Lines;Total Lines\n"
         + "\n".join(
             [
-                f"{dept['DATE']};{dept['CODE_DUPLICATION']};"
-                f"{dept['COVERAGE']};{dept['IMPLEMENTATION_LINES']};"
-                f"{dept['TEST_LINES']};{dept['TOTAL_LINES']}"
-                for dept in dept_list
+                f"{debt['DATE']};{debt['CODE_DUPLICATION']};"
+                f"{debt['IMPLEMENTATION_LINES']};"
+                f"{debt['TEST_LINES']};{debt['TOTAL_LINES']}"
+                for debt in debts
             ]
         )
     )
@@ -174,10 +186,10 @@ def main():
     env_variables = load_environment_variables()
     debt_report_by_range = get_debt_report_by_range_date(
         get_directory_path_to_analyze(),
+        env_variables["FILE_EXTENSIONS"],
         env_variables["START_DATE"],
         env_variables["END_DATE"],
         env_variables["INTERVAL_IN_DAYS"],
-        env_variables["FILE_EXTENSIONS"],
     )
     print(format_debt_report(debt_report_by_range))
 
