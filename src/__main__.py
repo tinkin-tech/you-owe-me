@@ -19,6 +19,8 @@ REGEX_TO_MATCH_WITH_SCC_ROW_TOTAL_REPORT = "(?<=Total)(.*)(?=)"
 REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JEST_REPORT_JSON = (
     "(?<=\\{)\\s*[^{]*?(?=[\\}])"
 )
+POSITION_PERCENTAGE_OF_COVERAGE = 3
+POSITION_VALUE_PERCENTAGE_OF_COVERAGE = 1
 
 
 def has_more_than_one_element(list_):
@@ -125,8 +127,12 @@ def get_coverage_percentage(directory_path):
         REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JEST_REPORT_JSON,
         coverage_report_summary.strip(),
     )[0]
-    summary_lines_coverage = report_of_lines.split(",")[3]
-    coverage = summary_lines_coverage.split(":")[1]
+    summary_lines_coverage = report_of_lines.split(",")[
+        POSITION_PERCENTAGE_OF_COVERAGE
+    ]
+    coverage = summary_lines_coverage.split(":")[
+        POSITION_VALUE_PERCENTAGE_OF_COVERAGE
+    ]
     return f"{coverage}%"
 
 
