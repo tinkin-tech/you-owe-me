@@ -7,7 +7,6 @@ from src.utils.date import get_dates_by_day_interval, subtract_day_to_date
 from src.utils.string import (
     remove_whitespace_from_text,
     convert_number_string_to_number_list,
-    convert_string_to_list_by_separator,
 )
 from src.utils.git import (
     get_commit_by_date,
@@ -16,8 +15,10 @@ from src.utils.git import (
 )
 
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
-REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
-REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JSON = "(?<=\\{)\\s*[^{]*?(?=[\\}])"
+REGEX_TO_MATCH_WITH_SCC_ROW_TOTAL_REPORT = "(?<=Total)(.*)(?=)"
+REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JEST_REPORT_JSON = (
+    "(?<=\\{)\\s*[^{]*?(?=[\\}])"
+)
 
 
 def has_more_than_one_element(list_):
@@ -35,21 +36,20 @@ def get_directory_path_to_analyze():
 
 
 def install_debt_report_dependencies():
+    install_debt_dependency_by_name("jscpd")
+    install_debt_dependency_by_name("jest")
+
+
+def install_debt_dependency_by_name(dependency_name):
     subprocess.run(
-        "npm list -g jscpd || npm i -g jscpd@latest",
-        shell=True,
-        stdout=subprocess.DEVNULL,
-        check=True,
-    )
-    subprocess.run(
-        "npm list -g jest || npm i -g jest@latest",
+        f"npm list -g {dependency_name} || npm i -g {dependency_name}@latest",
         shell=True,
         stdout=subprocess.DEVNULL,
         check=True,
     )
 
 
-def get_percentage_code_duplication(directory_path):
+def get_code_duplication_percentage(directory_path):
     code_duplication_report = (
         subprocess.check_output(
             f"jscpd '{directory_path}' --silent --ignore  "
@@ -82,10 +82,12 @@ def get_report_total_lines(directory_path, file_extensions):
 
 def get_total_lines_of_code(report_code_lines):
     total_lines_row = remove_whitespace_from_text(
-        re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
+        re.findall(REGEX_TO_MATCH_WITH_SCC_ROW_TOTAL_REPORT, report_code_lines)[
+            0
+        ]
     )
     total_lines, blank_lines = convert_number_string_to_number_list(
-        total_lines_row, ","
+        total_lines_row, separator=","
     )[1:3]
     return total_lines - blank_lines
 
@@ -117,18 +119,14 @@ def get_coverage_percentage(directory_path):
         f"cd {directory_path} && cat coverage/coverage-summary.json | head -1",
         shell=True,
     ).decode("utf-8")
-    # get total, covered, skipped, pct separated by "," from LINES REPORT
+    # get total, covered, skipped, pct separated by "," from LINES REPORT,
+    # where pct is the percentage
     report_of_lines = re.findall(
-        REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JSON,
+        REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JEST_REPORT_JSON,
         coverage_report_summary.strip(),
     )[0]
-    summary_lines_coverage = convert_string_to_list_by_separator(
-        report_of_lines,
-        ",",
-    )[3]
-    coverage = convert_string_to_list_by_separator(summary_lines_coverage, ":")[
-        1
-    ]
+    summary_lines_coverage = report_of_lines.split(",")[3]
+    coverage = summary_lines_coverage.split(":")[1]
     return f"{coverage}%"
 
 
@@ -151,7 +149,7 @@ def get_debt_report_by_range_date(
         debt_report.append(
             {
                 "DATE": subtract_day_to_date(date, 1),
-                "CODE_DUPLICATION": get_percentage_code_duplication(
+                "CODE_DUPLICATION": get_code_duplication_percentage(
                     directory_path
                 ),
                 "IMPLEMENTATION_LINES": get_implementation_and_test_lines(

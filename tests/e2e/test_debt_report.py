@@ -7,7 +7,7 @@ def test_debt_report():
         "tests/fixtures",
         "js,jsx",
         datetime.strptime("2021-10-01", "%Y-%m-%d"),
-        datetime.strptime("2021-10-01", "%Y-%m-%d"),
+        datetime.strptime("2021-10-18", "%Y-%m-%d"),
         1,
     )
     assert (
