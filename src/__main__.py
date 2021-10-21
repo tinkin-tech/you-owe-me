@@ -21,6 +21,14 @@ REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JEST_REPORT_JSON = (
 )
 POSITION_PERCENTAGE_OF_COVERAGE = 3
 POSITION_VALUE_PERCENTAGE_OF_COVERAGE = 1
+REPORT_COLUMNS = [
+    "DATE",
+    "CODE_DUPLICATION",
+    "IMPLEMENTATION_LINES",
+    "TEST_LINES",
+    "TOTAL_LINES",
+    "COVERAGE",
+]
 
 
 def has_more_than_one_element(list_):
@@ -180,10 +188,7 @@ def format_debt_report(debts):
         "Test Lines;Total Lines;Coverage\n"
         + "\n".join(
             [
-                f"{debt['DATE']};{debt['CODE_DUPLICATION']};"
-                f"{debt['IMPLEMENTATION_LINES']};"
-                f"{debt['TEST_LINES']};{debt['TOTAL_LINES']};"
-                f"{debt['COVERAGE']}"
+                ";".join([str(debt[column]) for column in REPORT_COLUMNS])
                 for debt in debts
             ]
         )
