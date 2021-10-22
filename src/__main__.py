@@ -15,7 +15,20 @@ from src.utils.git import (
 )
 
 REGEX_TO_FIND_PERCENTAGE_NUMBER = "\\d+(?:\\.\\d+)?%"
-REGEX_TO_MATCH_WITH_ROW_TOTALS = "(?<=Total)(.*)(?=)"
+REGEX_TO_MATCH_WITH_SCC_ROW_TOTAL_REPORT = "(?<=Total)(.*)(?=)"
+REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JEST_REPORT_JSON = (
+    "(?<=\\{)\\s*[^{]*?(?=[\\}])"
+)
+POSITION_PERCENTAGE_OF_COVERAGE = 3
+POSITION_VALUE_PERCENTAGE_OF_COVERAGE = 1
+REPORT_COLUMNS = [
+    "DATE",
+    "CODE_DUPLICATION",
+    "IMPLEMENTATION_LINES",
+    "TEST_LINES",
+    "TOTAL_LINES",
+    "COVERAGE",
+]
 
 
 def has_more_than_one_element(list_):
@@ -33,8 +46,13 @@ def get_directory_path_to_analyze():
 
 
 def install_debt_report_dependencies():
+    install_debt_dependency_by_name("jscpd")
+    install_debt_dependency_by_name("jest")
+
+
+def install_debt_dependency_by_name(dependency_name):
     subprocess.run(
-        "npm list -g jscpd || npm i -g jscpd@latest",
+        f"npm list -g {dependency_name} || npm i -g {dependency_name}@latest",
         shell=True,
         stdout=subprocess.DEVNULL,
         check=True,
@@ -74,10 +92,12 @@ def get_report_total_lines(directory_path, file_extensions):
 
 def get_total_lines_of_code(report_code_lines):
     total_lines_row = remove_whitespace_from_text(
-        re.findall(REGEX_TO_MATCH_WITH_ROW_TOTALS, report_code_lines)[0]
+        re.findall(REGEX_TO_MATCH_WITH_SCC_ROW_TOTAL_REPORT, report_code_lines)[
+            0
+        ]
     )
     total_lines, blank_lines = convert_number_string_to_number_list(
-        total_lines_row
+        total_lines_row, separator=","
     )[1:3]
     return total_lines - blank_lines
 
@@ -94,6 +114,34 @@ def get_implementation_and_test_lines(directory_path, file_extensions, type_):
         "test_lines": total_lines - implementation_lines,
         "total_lines": total_lines,
     }.get(type_)
+
+
+def get_coverage_percentage(directory_path):
+    subprocess.run(
+        f"cd {directory_path} "
+        '&& npx jest --coverage --silent --coverageReporters="json-summary"',
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT,
+        check=True,
+    )
+    coverage_report_summary = subprocess.check_output(
+        f"cd {directory_path} && cat coverage/coverage-summary.json | head -1",
+        shell=True,
+    ).decode("utf-8")
+    # get total, covered, skipped, pct separated by "," from LINES REPORT,
+    # where pct is the percentage
+    report_of_lines = re.findall(
+        REGEX_TO_MATCH_DEEPEST_VALUE_INSIDE_JEST_REPORT_JSON,
+        coverage_report_summary.strip(),
+    )[0]
+    summary_lines_coverage = report_of_lines.split(",")[
+        POSITION_PERCENTAGE_OF_COVERAGE
+    ]
+    coverage = summary_lines_coverage.split(":")[
+        POSITION_VALUE_PERCENTAGE_OF_COVERAGE
+    ]
+    return f"{coverage}%"
 
 
 def get_debt_report_by_range_date(
@@ -127,6 +175,7 @@ def get_debt_report_by_range_date(
                 "TOTAL_LINES": get_implementation_and_test_lines(
                     directory_path, file_extensions, "total_lines"
                 ),
+                "COVERAGE": get_coverage_percentage(directory_path),
             }
         )
     checkout_by_commit_or_branch(directory_path, current_branch)
@@ -135,12 +184,11 @@ def get_debt_report_by_range_date(
 
 def format_debt_report(debts):
     return (
-        "Date;Code Duplication;Implementation Lines;Test Lines; Total Lines\n"
+        "Date;Code Duplication;Implementation Lines;"
+        "Test Lines;Total Lines;Coverage\n"
         + "\n".join(
             [
-                f"{debt['DATE']};{debt['CODE_DUPLICATION']};"
-                f"{debt['IMPLEMENTATION_LINES']};"
-                f"{debt['TEST_LINES']};{debt['TOTAL_LINES']}"
+                ";".join([str(debt[column]) for column in REPORT_COLUMNS])
                 for debt in debts
             ]
         )

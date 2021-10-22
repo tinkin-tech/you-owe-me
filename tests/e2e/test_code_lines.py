@@ -6,7 +6,7 @@ def test_code_implementation_lines():
         get_implementation_and_test_lines(
             "tests/fixtures", "js,jsx", "implementation_lines"
         )
-        == 79
+        == 88
     )
 
 
@@ -24,5 +24,5 @@ def test_code_total_lines():
         get_implementation_and_test_lines(
             "tests/fixtures", "js,jsx", "total_lines"
         )
-        == 93
+        == 102
     )
